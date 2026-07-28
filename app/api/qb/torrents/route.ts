@@ -1,8 +1,6 @@
-import { jsonOk, withAuth } from "@/lib/api";
-import { mockTorrents } from "@/lib/dev/preview";
+import { jsonOk, withApi } from "@/lib/api";
 import { listTorrents } from "@/lib/qbittorrent";
 
-export const GET = withAuth(
-  async () => jsonOk({ torrents: await listTorrents() }),
-  () => ({ torrents: mockTorrents() })
+export const GET = withApi(async () =>
+  jsonOk({ torrents: await listTorrents() })
 );

@@ -1,24 +1,8 @@
-# ── Production reference (Cloudflare Worker + GitHub Actions) ──
-# Do NOT commit real values. Do NOT enable DEV_PREVIEW here.
-#
-# Placement:
-#   GitHub Secrets     → QBITTORRENT_USERNAME,
-#                        QBITTORRENT_PASSWORD,
-#                        CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
-#   GitHub Variables   → ALLOWED_GOOGLE_EMAILS,
-#                        GOOGLE_CLIENT_ID, QBITTORRENT_URL
-#   Worker Secrets     → synced by Deploy (all except CLOUDFLARE_*)
-#
+# ── Production Docker runtime ──
+# Copy this file to `.env` beside compose.yaml and set real values there.
+# Do NOT commit `.env`.
 # See docs/reference/environment.md and docs/guides/deployment.md.
 
-QBITTORRENT_URL=https://your-qb.example.com
+QBITTORRENT_URL=http://192.168.1.10:8080
 QBITTORRENT_USERNAME=
 QBITTORRENT_PASSWORD=
-
-# Web App — Google OAuth (Worker + browser sign-in; client id is public).
-GOOGLE_CLIENT_ID=
-ALLOWED_GOOGLE_EMAILS=you@gmail.com
-
-# GitHub Secrets only (Actions deploy), not Worker runtime:
-# CLOUDFLARE_API_TOKEN=
-# CLOUDFLARE_ACCOUNT_ID=

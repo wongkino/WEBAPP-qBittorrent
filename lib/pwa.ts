@@ -1,6 +1,12 @@
-import { isStandaloneWebApp } from "@/lib/google-session";
-
 export const INSTALL_DISMISS_KEY = "tg-dl-install-dismissed";
+
+export function isStandaloneWebApp(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)
+  );
+}
 
 export function isInstallDismissed(): boolean {
   if (typeof window === "undefined") return true;
@@ -31,19 +37,4 @@ export function isAppleTouchDevice(): boolean {
   const ua = window.navigator.userAgent;
   return /iPad|iPhone|iPod/.test(ua) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-}
-
-export function isProbablyOfflineError(err: unknown): boolean {
-  if (typeof navigator !== "undefined" && navigator.onLine === false) {
-    return true;
-  }
-  if (!(err instanceof Error)) return false;
-  const msg = err.message.toLowerCase();
-  return (
-    msg.includes("failed to fetch") ||
-    msg.includes("networkerror") ||
-    msg.includes("network request failed") ||
-    msg.includes("load failed") ||
-    msg.includes("fetch failed")
-  );
 }

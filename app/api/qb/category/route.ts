@@ -1,7 +1,7 @@
-import { jsonOk, readHashesBody, withAuth } from "@/lib/api";
+import { jsonOk, readHashesBody, withApi } from "@/lib/api";
 import { setTorrentCategory } from "@/lib/qbittorrent";
 
-export const POST = withAuth(async (request) => {
+export const POST = withApi(async (request) => {
   const parsed = await readHashesBody<{
     hashes?: string;
     category?: string;

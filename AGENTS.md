@@ -4,9 +4,9 @@
 
 ## 專案
 
-個人 **qBittorrent Web App**（Google 登入、PWA），經 Cloudflare Workers（OpenNext）代理 qBittorrent。
+個人 **qBittorrent Web App**（PWA），以 Docker 執行並代理 qBittorrent；外部反向代理負責登入。
 
-- Worker：`qb`（`wrangler.jsonc`）
+- 部署：Docker Compose；Web App 僅綁定宿主機 localhost
 - 語系：四語，`localStorage`（`lib/i18n.ts`）
 - 白名單個人工具；勿做成 SaaS
 
@@ -20,9 +20,8 @@ components/* → lib/client-api.ts → app/api/qb/* → lib/qbittorrent.ts → q
 |----|------|------|
 | UI | `components/` | client only；字串 → `lib/i18n.ts` |
 | 前端 API | `lib/client-api.ts` | 只打 `/api/qb/*` |
-| Route | `app/api/qb/*/route.ts` | `requireAuth` |
+| Route | `app/api/qb/*/route.ts` | `withApi` 錯誤處理 |
 | qB | `lib/qbittorrent.ts` | **唯一**打 qBittorrent |
-| 認證 | `lib/auth.ts`, `lib/google-auth.ts` | JWT 驗證 |
 
 ## 閱讀順序
 
@@ -34,8 +33,7 @@ components/* → lib/client-api.ts → app/api/qb/* → lib/qbittorrent.ts → q
 
 ## 硬規則
 
-- `/api/qb/*` → `Bearer <Google ID token>` + `ALLOWED_GOOGLE_EMAILS`
-- 本機預覽 → `Bearer dev-preview`（雙 `DEV_PREVIEW` flag）
+- `/api/qb/*` 由既有反向代理保護；不可直接公開容器 port 3000
 - qB CSRF：`Origin`/`Referer` 正確；pause 先 `stop` 再 `pause`
 - 不提交 `.env*`、`.dev.vars`
 - 回覆使用者用**繁體中文**

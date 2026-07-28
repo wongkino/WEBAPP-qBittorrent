@@ -7,7 +7,7 @@ alwaysApply: true
 
 - 回覆使用者：**繁體中文**
 - **文件地圖**：`docs/README.md` · **AI 任務**：`docs/ai/tasks.md` · **約束**：`AGENTS.md`
-- qBittorrent **只**經 `lib/qbittorrent.ts`；`/api/qb/*` 用 `requireAuth`
+- qBittorrent **只**經 `lib/qbittorrent.ts`；`/api/qb/*` 用 `withApi`，並由外部反向代理保護
 - UI 字串 → `lib/i18n.ts`（四語）；語系／主題 → `localStorage`
-- 勿提交 `.env*`、`.dev.vars`
+- 勿提交 `.env*`
 - 改動前讀 `docs/architecture/overview.md`

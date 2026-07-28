@@ -33,11 +33,6 @@ yarn-error.log*
 # env files (local secrets; examples live under env/)
 .env
 .env.*
-.dev.vars
-
-# cloudflare / opennext
-.open-next
-.wrangler
 
 # typescript
 *.tsbuildinfo

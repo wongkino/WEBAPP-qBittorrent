@@ -22,9 +22,9 @@ Cursor 會自動載入根目錄 [`AGENTS.md`](../../AGENTS.md)。本目錄補充
 ## 硬規則（摘要）
 
 - qBittorrent **只**經 `lib/qbittorrent.ts`
-- `/api/qb/*` 必須 `requireAuth`
+- `/api/qb/*` 必須由既有反向代理保護
 - UI 字串只改 `lib/i18n.ts`（四語）
-- 不提交 `.env*`、`.dev.vars`
+- 不提交 `.env*`
 - 回覆使用者用**繁體中文**
 
 完整約束見 [`AGENTS.md`](../../AGENTS.md)。

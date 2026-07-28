@@ -10,11 +10,10 @@
 
 ```
 1. lib/qbittorrent.ts          新增 qB API 封裝
-2. app/api/qb/<name>/route.ts  requireAuth + previewResponse + handleApiError
-3. lib/dev/preview.ts          假資料（若 DEV_PREVIEW 需支援）
-4. lib/client-api.ts           瀏覽器 fetch 函式
-5. components/*                UI
-6. lib/i18n.ts                 四語字串（zh-Hant, zh-Hans, en, ja）
+2. app/api/qb/<name>/route.ts  withApi + handleApiError
+3. lib/client-api.ts           瀏覽器 fetch 函式
+4. components/*                UI
+5. lib/i18n.ts                 四語字串（zh-Hant, zh-Hans, en, ja）
 ```
 
 **勿**：在 component 或 route 直接 `fetch(QBITTORRENT_URL)`。
@@ -31,23 +30,12 @@
 
 ---
 
-## 改認證
-
-**必讀**：`lib/auth.ts`、`lib/google-auth.ts`、`components/WebApp.tsx`
-
-- `/api/qb/*` 一律 `requireAuth`
-- 前端 Bearer 走 `lib/client-auth.ts`
-- 401 回傳後 client 拋 `AuthSessionError`
-
----
-
 ## 部署或改 CI
 
-**必讀**：`docs/guides/deployment.md`、`.github/workflows/deploy-cloudflare.yml`、`wrangler.jsonc`
+**必讀**：`docs/guides/deployment.md`、`Dockerfile`、`compose.yaml`
 
 - Secrets 不提交 repo
-- `GOOGLE_CLIENT_ID` 需在 build 時注入（見 workflow `env:`）
-- 不擅自改 Worker 名稱 `qb`
+- 容器 port 僅綁定 localhost，登入由外部反向代理負責
 
 ---
 
@@ -56,7 +44,7 @@
 **必讀**：`docs/reference/environment.md`、`env/*.example`
 
 - 範本只放 `env/*.example`
-- 同步更新 `production.example`、deploy workflow、本文件
+- 同步更新 `production.example` 與本文件
 
 ---
 
@@ -64,10 +52,8 @@
 
 | 現象 | 查 |
 |------|-----|
-| 401 / 重複登入 | token 過期、`ALLOWED_GOOGLE_EMAILS`、Google origins |
 | qB 502 | `QBITTORRENT_URL`、CSRF Origin/Referer、帳密 |
-| 登入按鈕不見 | `GOOGLE_CLIENT_ID` 建置注入、`NEXT_PUBLIC_GOOGLE_CLIENT_ID` |
-| 本機白屏 | `DEV_PREVIEW` 兩個 flag 是否一致 |
+| 代理拒絕請求 | 代理登入規則是否同時涵蓋 `/api/qb/*` |
 | lint 失敗 | `npm run lint`；避免 effect 內同步 setState |
 
 ---

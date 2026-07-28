@@ -4,11 +4,10 @@
 
 ```bash
 cp env/development.example .env.development.local   # npm run dev
-cp env/wrangler.development.example .dev.vars       # npm run preview
+cp env/production.example .env                       # docker compose
 ```
 
 | 檔案 | 用途 |
 |------|------|
 | `development.example` | 本機 Next.js |
-| `wrangler.development.example` | Wrangler preview |
-| `production.example` | 正式環境對照（勿提交真值） |
+| `production.example` | Docker Compose 執行環境（勿提交真值） |

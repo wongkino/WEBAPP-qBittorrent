@@ -1426,40 +1426,6 @@ body {
   opacity: 0.45;
 }
 
-.sign-in {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  padding: var(--space-lg) var(--space-md);
-  background: var(--bg-elevated);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  animation: fadeUp 0.4s var(--ease) both;
-}
-
-.sign-in__title {
-  margin: 0;
-  font: var(--text-title);
-  letter-spacing: -0.02em;
-}
-
-.sign-in__hint,
-.sign-in__footer {
-  margin: 0;
-  color: var(--hint);
-  font: var(--text-caption);
-  line-height: 1.5;
-}
-
-.sign-in__google {
-  display: flex;
-  justify-content: center;
-  min-height: var(--touch);
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

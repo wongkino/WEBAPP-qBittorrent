@@ -1,6 +1,6 @@
 # 架構總覽
 
-個人 qBittorrent **Web App**（Google 登入、PWA／iOS 主畫面），經 Cloudflare Workers 代理 qBittorrent Web API。
+個人 qBittorrent **Web App**（PWA／iOS 主畫面），以 Docker 執行並代理 qBittorrent Web API。外部反向代理負責 HTTPS 與登入。
 
 檔案目錄見 [codebase.md](codebase.md)。API 對照見 [reference/api-routes.md](../reference/api-routes.md)。
 
@@ -12,13 +12,13 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  Presentation（瀏覽器）                                      │
 │  app/page.tsx → components/WebApp → components/QbDashboard  │
-│  lib/client-api.ts · lib/client-auth.ts · lib/google-session  │
+│  lib/client-api.ts                                             │
 └────────────────────────────┬────────────────────────────────┘
-                             │ Authorization: Bearer <Google ID token>
+                             │ 同源 HTTP
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  API（Next.js Route Handlers）                               │
-│  app/api/qb/*/route.ts · lib/api.ts · lib/auth.ts             │
+│  app/api/qb/*/route.ts · lib/api.ts                           │
 └────────────────────────────┬────────────────────────────────┘
                              │ Session + CSRF
                              ▼
@@ -27,24 +27,18 @@
 │  lib/qbittorrent.ts → QBITTORRENT_URL                        │
 └─────────────────────────────────────────────────────────────┘
 
-Deploy：GitHub Actions → OpenNext build → wrangler deploy（worker.ts）
+Deploy：Docker Compose → Next.js standalone container
 ```
 
-**技術棧**：Next.js 16 App Router、React 19、TypeScript、`@opennextjs/cloudflare`、Wrangler、Google Identity Services、`jose`。
+**技術棧**：Next.js 16 App Router、React 19、TypeScript、Docker Compose。
 
 ---
 
 ## 請求流
 
-### 登入
-
-1. `WebApp` 讀 `localStorage` Google credential，或顯示 `GoogleSignIn`
-2. `fetchSnapshot` 驗證 token；401 → 清除 credential、回到登入
-3. 成功後掛載 `QbDashboard`
-
 ### 資料操作
 
-`QbDashboard` → `client-api` → `/api/qb/*` → `requireAuth` → `qbittorrent` → qBittorrent
+`QbDashboard` → `client-api` → `/api/qb/*` → `qbittorrent` → qBittorrent
 
 - 多 hash 以 `|` 串接
 - 下載分頁約每 4 秒輪詢（頁面隱藏時跳過）
@@ -52,14 +46,10 @@ Deploy：GitHub Actions → OpenNext build → wrangler deploy（worker.ts）
 
 ---
 
-## 認證
+## 存取控制
 
-| 情境 | 機制 |
-|------|------|
-| 正式 | `Authorization: Bearer <Google ID token>`；`jose` 驗證；`ALLOWED_GOOGLE_EMAILS` |
-| 本機預覽 | `Bearer dev-preview`；`DEV_PREVIEW=1` + `NEXT_PUBLIC_DEV_PREVIEW=1` + `NODE_ENV=development` |
-
-Token 約 1 小時過期 → `AuthSessionError`（401）→ `WebApp` 清除 credential 重登。
+- Web App 不處理登入或使用者 session；既有反向代理必須保護 `/` 與所有 `/api/qb/*`。
+- Compose 僅將容器 port 發佈到 `127.0.0.1:3000`，避免從區網直接存取。
 
 ---
 
@@ -67,7 +57,6 @@ Token 約 1 小時過期 → `AuthSessionError`（401）→ `WebApp` 清除 cred
 
 | 資料 | 儲存 | 模組 |
 |------|------|------|
-| Google credential | `localStorage` | `lib/google-session.ts` |
 | 語系 | `localStorage` | `lib/i18n.ts` |
 | 主題 | `localStorage` | `lib/theme.ts` |
 

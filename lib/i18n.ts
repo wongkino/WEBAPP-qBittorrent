@@ -5,7 +5,6 @@ export type MessageKey = keyof typeof zhHant;
 const zhHant = {
   "app.loading": "載入中…",
   "app.loadingHint": "請稍候",
-  "app.hello": "你好，{name}",
   "app.nav": "主選單",
   "app.tab.downloads": "下載",
   "app.tab.rss": "RSS",
@@ -15,7 +14,6 @@ const zhHant = {
   "app.pullToRefresh": "下拉重新整理",
   "app.refreshing": "重新整理中…",
   "app.actionFailed": "操作失敗",
-  "app.previewUser": "本機預覽",
 
   "sheet.close": "關閉",
   "sheet.done": "完成",
@@ -30,16 +28,6 @@ const zhHant = {
   "pwa.offlineTitle": "目前離線",
   "pwa.offlineHint": "恢復連線後下拉重新整理",
   "pwa.offlineBanner": "離線中 — 下拉可重試",
-
-  "signIn.title": "qBittorrent Web App",
-  "signIn.hintStandalone":
-    "使用 Google 帳號登入。僅白名單內的 email 可連線 qBittorrent。",
-  "signIn.hintBrowser":
-    "使用 Google 帳號登入以存取 qBittorrent（需白名單 email）。",
-  "signIn.failed": "Google 登入失敗，請確認帳號是否在白名單內",
-  "signIn.missingClientId": "未設定 GOOGLE_CLIENT_ID，無法顯示登入按鈕",
-  "signIn.footer":
-    "在 Safari 分享 → 加入主畫面，即可像 App 一樣全螢幕使用。",
 
   "theme.toLight": "日間",
   "theme.toDark": "夜間",
@@ -160,7 +148,6 @@ const zhHant = {
 const zhHans: Record<MessageKey, string> = {
   "app.loading": "加载中…",
   "app.loadingHint": "请稍候",
-  "app.hello": "你好，{name}",
   "app.nav": "主菜单",
   "app.tab.downloads": "下载",
   "app.tab.rss": "RSS",
@@ -170,7 +157,6 @@ const zhHans: Record<MessageKey, string> = {
   "app.pullToRefresh": "下拉刷新",
   "app.refreshing": "刷新中…",
   "app.actionFailed": "操作失败",
-  "app.previewUser": "本地预览",
 
   "sheet.close": "关闭",
   "sheet.done": "完成",
@@ -185,16 +171,6 @@ const zhHans: Record<MessageKey, string> = {
   "pwa.offlineTitle": "当前离线",
   "pwa.offlineHint": "恢复连接后下拉刷新",
   "pwa.offlineBanner": "离线中 — 下拉可重试",
-
-  "signIn.title": "qBittorrent Web App",
-  "signIn.hintStandalone":
-    "使用 Google 账号登录。仅白名单内的 email 可连接 qBittorrent。",
-  "signIn.hintBrowser":
-    "使用 Google 账号登录以访问 qBittorrent（需白名单 email）。",
-  "signIn.failed": "Google 登录失败，请确认账号是否在白名单内",
-  "signIn.missingClientId": "未设置 GOOGLE_CLIENT_ID，无法显示登录按钮",
-  "signIn.footer":
-    "在 Safari 分享 → 加入主画面，即可像 App 一样全屏使用。",
 
   "theme.toLight": "日间",
   "theme.toDark": "夜间",
@@ -315,7 +291,6 @@ const zhHans: Record<MessageKey, string> = {
 const en: Record<MessageKey, string> = {
   "app.loading": "Loading…",
   "app.loadingHint": "Just a moment",
-  "app.hello": "Hi, {name}",
   "app.nav": "Main menu",
   "app.tab.downloads": "Downloads",
   "app.tab.rss": "RSS",
@@ -325,7 +300,6 @@ const en: Record<MessageKey, string> = {
   "app.pullToRefresh": "Pull to refresh",
   "app.refreshing": "Refreshing…",
   "app.actionFailed": "Action failed",
-  "app.previewUser": "Local preview",
 
   "sheet.close": "Close",
   "sheet.done": "Done",
@@ -340,18 +314,6 @@ const en: Record<MessageKey, string> = {
   "pwa.offlineTitle": "You’re offline",
   "pwa.offlineHint": "When back online, pull to refresh",
   "pwa.offlineBanner": "Offline — pull to retry",
-
-  "signIn.title": "qBittorrent Web App",
-  "signIn.hintStandalone":
-    "Sign in with Google. Only whitelisted emails can connect to qBittorrent.",
-  "signIn.hintBrowser":
-    "Sign in with Google to access qBittorrent (whitelisted email required).",
-  "signIn.failed":
-    "Google sign-in failed. Check that your email is on the allow list.",
-  "signIn.missingClientId":
-    "GOOGLE_CLIENT_ID is not set; the sign-in button cannot be shown.",
-  "signIn.footer":
-    "In Safari: Share → Add to Home Screen for a full-screen app experience.",
 
   "theme.toLight": "Light",
   "theme.toDark": "Dark",
@@ -475,7 +437,6 @@ const en: Record<MessageKey, string> = {
 const ja: Record<MessageKey, string> = {
   "app.loading": "読み込み中…",
   "app.loadingHint": "少々お待ちください",
-  "app.hello": "こんにちは、{name}",
   "app.nav": "メインメニュー",
   "app.tab.downloads": "ダウンロード",
   "app.tab.rss": "RSS",
@@ -485,7 +446,6 @@ const ja: Record<MessageKey, string> = {
   "app.pullToRefresh": "引っ張りで更新",
   "app.refreshing": "更新中…",
   "app.actionFailed": "操作に失敗しました",
-  "app.previewUser": "ローカルプレビュー",
 
   "sheet.close": "閉じる",
   "sheet.done": "完了",
@@ -500,18 +460,6 @@ const ja: Record<MessageKey, string> = {
   "pwa.offlineTitle": "オフラインです",
   "pwa.offlineHint": "接続が戻ったら引っ張って更新",
   "pwa.offlineBanner": "オフライン — 引っ張って再試行",
-
-  "signIn.title": "qBittorrent Web App",
-  "signIn.hintStandalone":
-    "Google アカウントでサインインします。許可リストのメールのみ qBittorrent に接続できます。",
-  "signIn.hintBrowser":
-    "Google アカウントでサインインして qBittorrent にアクセスします（許可リスト必須）。",
-  "signIn.failed":
-    "Google サインインに失敗しました。メールが許可リストにあるか確認してください。",
-  "signIn.missingClientId":
-    "GOOGLE_CLIENT_ID が未設定のため、サインインボタンを表示できません。",
-  "signIn.footer":
-    "Safari で共有 → ホーム画面に追加するとフルスクリーンで使えます。",
 
   "theme.toLight": "ライト",
   "theme.toDark": "ダーク",

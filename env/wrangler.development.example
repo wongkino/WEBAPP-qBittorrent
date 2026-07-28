@@ -1,8 +1,0 @@
-# Wrangler / OpenNext local preview (`cp env/wrangler.development.example .dev.vars`)
-NEXTJS_ENV=development
-QBITTORRENT_URL=https://your-qb.example.com
-QBITTORRENT_USERNAME=
-QBITTORRENT_PASSWORD=
-# Optional — Google OAuth for Web App API:
-# GOOGLE_CLIENT_ID=
-# ALLOWED_GOOGLE_EMAILS=you@gmail.com

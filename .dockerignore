@@ -1,0 +1,12 @@
+.git
+.github
+.cursor
+.next
+.open-next
+.wrangler
+node_modules
+coverage
+.env
+.env.*
+.dev.vars
+npm-debug.log*

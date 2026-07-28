@@ -37,7 +37,7 @@ docs/
 |------|------|
 | [user.md](guides/user.md) | Web App 使用手冊 |
 | [development.md](guides/development.md) | 本機開發、scripts、擴充流程 |
-| [deployment.md](guides/deployment.md) | Cloudflare Deploy、驗證、故障排除 |
+| [deployment.md](guides/deployment.md) | Docker 部署、驗證、故障排除 |
 
 ### reference/
 

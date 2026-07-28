@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import { networkInterfaces } from "node:os";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 /** LAN IPv4 hosts so phones/other PCs can hit `next dev` without origin blocks. */
 function lanDevOrigins(): string[] {
@@ -18,13 +17,9 @@ function lanDevOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   // Next 16 blocks cross-origin `/_next/*` + HMR unless listed here.
   allowedDevOrigins: lanDevOrigins(),
-  env: {
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
-  },
 };
 
 export default nextConfig;
-
-initOpenNextCloudflareForDev();

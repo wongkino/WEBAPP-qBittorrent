@@ -1,10 +1,14 @@
 # qBittorrent Web App
 
-個人 Web App（Google 登入、PWA），經 Cloudflare Workers 代理 qBittorrent。
+個人 Web App（PWA），以 Docker 部署並代理 qBittorrent；既有反向代理負責登入。
 
 ```bash
 cp env/development.example .env.development.local
 npm install && npm run dev
+
+# 正式 Docker 部署
+cp env/production.example .env
+docker compose up -d --build
 ```
 
 → http://localhost:3000
@@ -30,4 +34,4 @@ npm install && npm run dev
 
 ## 功能
 
-Google 登入 · 下載管理 · RSS · 四語 · 日間／夜間 · PWA
+反向代理登入 · 下載管理 · RSS · 四語 · 日間／夜間 · PWA

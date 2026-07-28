@@ -10,7 +10,6 @@ import {
   removeRssFeed,
   type ClientRssFeed,
 } from "@/lib/client-api";
-import type { ClientAuth } from "@/lib/client-auth";
 import { CategorySelect } from "@/components/CategorySelect";
 import { EmptyState } from "@/components/EmptyState";
 import { useI18n } from "@/components/I18nProvider";
@@ -24,19 +23,14 @@ import {
   RefreshIcon,
   RemoveIcon,
 } from "@/components/icons";
-import {
-  classifyClientError,
-  errMessage,
-} from "@/lib/client-errors";
+import { errMessage } from "@/lib/client-errors";
 
 type Props = {
-  auth: ClientAuth;
   categories: string[];
   onAdded?: () => void;
-  onAuthExpired?: () => void;
 };
 
-export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
+export function RssPanel({ categories, onAdded }: Props) {
   const { t } = useI18n();
   const [feeds, setFeeds] = useState<ClientRssFeed[]>([]);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
@@ -56,35 +50,27 @@ export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
 
   const handleError = useCallback(
     (err: unknown) => {
-      if (classifyClientError(err) === "auth") {
-        onAuthExpired?.();
-        return;
-      }
       setError(errMessage(err, t("app.actionFailed")));
     },
-    [onAuthExpired, t]
+    [t]
   );
 
   const reload = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const { feeds: next } = await fetchRssFeeds(auth);
+      const { feeds: next } = await fetchRssFeeds();
       setFeeds(next);
       setSelectedPath((prev) => {
         if (prev && next.some((f) => f.path === prev)) return prev;
         return next[0]?.path ?? null;
       });
     } catch (err) {
-      if (classifyClientError(err) === "auth") {
-        onAuthExpired?.();
-        return;
-      }
       setError(errMessage(err, t("rss.loadFailed")));
     } finally {
       setLoading(false);
     }
-  }, [auth, onAuthExpired, t]);
+  }, [t]);
 
   useEffect(() => {
     void reload();
@@ -116,7 +102,7 @@ export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
           const feedUrl = url.trim();
           if (!feedUrl) return;
           void withBusy(async () => {
-            await addRssFeed(auth, feedUrl, name.trim() || undefined);
+            await addRssFeed(feedUrl, name.trim() || undefined);
             setUrl("");
             setName("");
           }, t("rss.added"));
@@ -239,7 +225,7 @@ export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
                       title={t("rss.refresh")}
                       onClick={() =>
                         void withBusy(
-                          () => refreshRssFeed(auth, selected.path),
+                          () => refreshRssFeed(selected.path),
                           t("rss.refreshed")
                         )
                       }
@@ -263,7 +249,7 @@ export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
                           return;
                         }
                         void withBusy(async () => {
-                          await removeRssFeed(auth, selected.path);
+                          await removeRssFeed(selected.path);
                           setPushed(false);
                         }, t("rss.removed"));
                       }}
@@ -309,13 +295,11 @@ export function RssPanel({ auth, categories, onAdded, onAuthExpired }: Props) {
                             onClick={() =>
                               void withBusy(async () => {
                                 await addTorrentUrl(
-                                  auth,
                                   article.torrentUrl,
                                   category.trim() || undefined
                                 );
                                 if (article.id) {
                                   await markRssRead(
-                                    auth,
                                     selected.path,
                                     article.id
                                   ).catch(() => undefined);

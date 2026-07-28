@@ -30,9 +30,7 @@ import {
   resumeTorrent,
   setTorrentCategory,
 } from "@/lib/client-api";
-import type { ClientAuth } from "@/lib/client-auth";
 import {
-  classifyClientError,
   errMessage,
 } from "@/lib/client-errors";
 import { filterTorrents, type StatusFilter } from "@/lib/format";
@@ -61,29 +59,13 @@ function pruneSelected(prev: Set<string>, hashes: Iterable<string>) {
   return kept.length === prev.size ? prev : new Set(kept);
 }
 
-type Props = {
-  auth: ClientAuth;
-  userName: string | null;
-  initialSnapshot?: SnapshotData | null;
-  onAuthExpired?: () => void;
-};
-
-export function QbDashboard({
-  auth,
-  userName,
-  initialSnapshot = null,
-  onAuthExpired,
-}: Props) {
+export function QbDashboard() {
   const { t, locale } = useI18n();
-  const [torrents, setTorrents] = useState<Torrent[]>(
-    () => initialSnapshot?.torrents ?? []
-  );
-  const [categories, setCategories] = useState<string[]>(
-    () => initialSnapshot?.categories ?? []
-  );
+  const [torrents, setTorrents] = useState<Torrent[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [listError, setListError] = useState<string | null>(null);
   const [busyHash, setBusyHash] = useState<string | null>(null);
-  const [booting, setBooting] = useState(!initialSnapshot);
+  const [booting, setBooting] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("added_on");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -151,19 +133,14 @@ export function QbDashboard({
 
   const handleError = useCallback(
     (err: unknown, fallbackKey: "app.refreshFailed" | "app.actionFailed") => {
-      const kind = classifyClientError(err);
-      if (kind === "auth") {
-        onAuthExpired?.();
-        return;
-      }
-      if (kind === "offline") {
+      if (!navigator.onLine) {
         setOnline(false);
         setListError(t("pwa.offlineBanner"));
         return;
       }
       setListError(errMessage(err, t(fallbackKey)));
     },
-    [onAuthExpired, t]
+    [t]
   );
 
   const applySnapshot = useCallback((next: SnapshotData) => {
@@ -185,11 +162,11 @@ export function QbDashboard({
     setListError(null);
   }, []);
 
-  const refreshTorrents = useCallback(async (session: ClientAuth) => {
+  const refreshTorrents = useCallback(async () => {
     if (refreshInflight.current) return;
     refreshInflight.current = true;
     try {
-      const { torrents: next } = await fetchTorrents(session);
+      const { torrents: next } = await fetchTorrents();
       setTorrents((prev) => (torrentsEqual(prev, next) ? prev : next));
       setSelected((prev) =>
         pruneSelected(
@@ -204,11 +181,11 @@ export function QbDashboard({
   }, []);
 
   const refreshAll = useCallback(
-    async (session: ClientAuth) => {
+    async () => {
       if (refreshInflight.current) return;
       refreshInflight.current = true;
       try {
-        applySnapshot(await fetchSnapshot(session));
+        applySnapshot(await fetchSnapshot());
       } finally {
         refreshInflight.current = false;
       }
@@ -218,12 +195,12 @@ export function QbDashboard({
 
   const runRefresh = useCallback(async () => {
     try {
-      await refreshAll(auth);
+      await refreshAll();
       setOnline(navigator.onLine);
     } catch (err) {
       handleError(err, "app.refreshFailed");
     }
-  }, [auth, handleError, refreshAll]);
+  }, [handleError, refreshAll]);
 
   function changeTab(next: AppTab, dir?: "left" | "right") {
     setTab((prev) => (prev === next ? prev : next));
@@ -234,12 +211,8 @@ export function QbDashboard({
   }
 
   useEffect(() => {
-    if (initialSnapshot) {
-      setBooting(false);
-      return;
-    }
     let cancelled = false;
-    void refreshAll(auth)
+    void refreshAll()
       .catch((err) => {
         if (!cancelled) handleError(err, "app.refreshFailed");
       })
@@ -249,13 +222,13 @@ export function QbDashboard({
     return () => {
       cancelled = true;
     };
-  }, [auth, handleError, initialSnapshot, refreshAll]);
+  }, [handleError, refreshAll]);
 
   useEffect(() => {
     if (booting || tab !== "downloads") return;
     const tick = () => {
       if (document.visibilityState === "hidden") return;
-      void refreshTorrents(auth).catch((err) =>
+      void refreshTorrents().catch((err) =>
         handleError(err, "app.refreshFailed")
       );
     };
@@ -265,13 +238,13 @@ export function QbDashboard({
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", tick);
     };
-  }, [auth, booting, handleError, refreshTorrents, tab]);
+  }, [booting, handleError, refreshTorrents, tab]);
 
   async function withBusy(hash: string, action: () => Promise<void>) {
     setBusyHash(hash);
     try {
       await action();
-      await refreshTorrents(auth);
+      await refreshTorrents();
     } catch (err) {
       handleError(err, "app.actionFailed");
     } finally {
@@ -351,14 +324,6 @@ export function QbDashboard({
 
   const selectedHashes = [...selected];
   const ptrActive = ptrRefreshing || ptrPull > 8;
-  const hello = userName ? (
-    <div className="nav-trailing">
-      <span className="nav-trailing__hello">
-        {t("app.hello", { name: userName })}
-      </span>
-    </div>
-  ) : null;
-
   const showOfflineEmpty = !online && torrents.length === 0;
 
   return (
@@ -368,7 +333,6 @@ export function QbDashboard({
         aria-hidden={!compact}
       >
         <span className="nav-compact__title">qBittorrent</span>
-        {hello}
       </div>
 
       <div
@@ -408,7 +372,6 @@ export function QbDashboard({
           className={`header header--large${compact ? " header--faded" : ""}`}
         >
           <h1 className="title">qBittorrent</h1>
-          {hello}
         </header>
 
         {listError && !showOfflineEmpty ? (
@@ -421,12 +384,9 @@ export function QbDashboard({
           <div className={`tab-panel tab-panel--${tabDir}`} key={tab}>
             {tab === "rss" ? (
               <RssPanel
-                key={auth.token}
-                auth={auth}
                 categories={categories}
-                onAuthExpired={onAuthExpired}
                 onAdded={() => {
-                  void refreshTorrents(auth).catch(() => undefined);
+                  void refreshTorrents().catch(() => undefined);
                 }}
               />
             ) : (
@@ -455,16 +415,16 @@ export function QbDashboard({
                   }
                   onClearSelection={() => setSelected(new Set())}
                   onBatchPause={() =>
-                    void withBusy("*", () => pauseTorrent(auth, selectedHashes))
+                    void withBusy("*", () => pauseTorrent(selectedHashes))
                   }
                   onBatchResume={() =>
                     void withBusy("*", () =>
-                      resumeTorrent(auth, selectedHashes)
+                      resumeTorrent(selectedHashes)
                     )
                   }
                   onBatchDelete={(deleteFiles) =>
                     void withBusy("*", async () => {
-                      await deleteTorrent(auth, selectedHashes, deleteFiles);
+                      await deleteTorrent(selectedHashes, deleteFiles);
                       setSelected(new Set());
                     })
                   }
@@ -478,19 +438,19 @@ export function QbDashboard({
                   filterActive={statusFilter !== "all"}
                   onToggleSelect={toggleSelect}
                   onPause={(hash) =>
-                    void withBusy(hash, () => pauseTorrent(auth, hash))
+                    void withBusy(hash, () => pauseTorrent(hash))
                   }
                   onResume={(hash) =>
-                    void withBusy(hash, () => resumeTorrent(auth, hash))
+                    void withBusy(hash, () => resumeTorrent(hash))
                   }
                   onDelete={(hash, deleteFiles) =>
                     void withBusy(hash, () =>
-                      deleteTorrent(auth, hash, deleteFiles)
+                      deleteTorrent(hash, deleteFiles)
                     )
                   }
                   onCategoryChange={(hash, category) =>
                     void withBusy(hash, () =>
-                      setTorrentCategory(auth, hash, category)
+                      setTorrentCategory(hash, category)
                     )
                   }
                 />
@@ -525,8 +485,8 @@ export function QbDashboard({
             categories={categories}
             onSuccess={() => setAddOpen(false)}
             onSubmit={async (urls, category) => {
-              await addTorrentUrl(auth, urls, category || undefined);
-              await refreshAll(auth);
+              await addTorrentUrl(urls, category || undefined);
+              await refreshAll();
             }}
           />
         </Sheet>

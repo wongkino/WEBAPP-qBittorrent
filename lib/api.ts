@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { AuthError, requireAuth, type VerifiedAuth } from "@/lib/auth";
 import { QBitError } from "@/lib/qbittorrent";
 
 export function jsonError(message: string, status: number) {
@@ -10,39 +9,15 @@ export function jsonOk(data: Record<string, unknown> = { ok: true }) {
   return NextResponse.json(data);
 }
 
-export { requireAuth };
-
-/** Local DEV_PREVIEW: skip qBittorrent and return mock / no-op. */
-export function previewResponse(
-  auth: VerifiedAuth,
-  data?: Record<string, unknown>
-) {
-  if (!auth.preview) return null;
-  return jsonOk(data ?? { ok: true });
-}
-
-type AuthHandler = (
-  request: Request,
-  auth: VerifiedAuth
-) => Promise<Response> | Response;
-
-type PreviewData =
-  | Record<string, unknown>
-  | (() => Record<string, unknown>)
-  | undefined;
-
-/**
- * Shared shell for `/api/qb/*`: requireAuth → optional preview → handler → errors.
+/** Shared error-handling shell for `/api/qb/*`.
+ * Access control is enforced by the external reverse proxy.
  */
-export function withAuth(handler: AuthHandler, previewData?: PreviewData) {
+export function withApi(
+  handler: (request: Request) => Promise<Response> | Response
+) {
   return async (request: Request) => {
     try {
-      const auth = await requireAuth(request);
-      const data =
-        typeof previewData === "function" ? previewData() : previewData;
-      const preview = previewResponse(auth, data);
-      if (preview) return preview;
-      return await handler(request, auth);
+      return await handler(request);
     } catch (err) {
       return handleApiError(err);
     }
@@ -72,7 +47,7 @@ export async function readRequiredString(
 }
 
 export function handleApiError(err: unknown) {
-  if (err instanceof AuthError || err instanceof QBitError) {
+  if (err instanceof QBitError) {
     return jsonError(err.message, err.status);
   }
   console.error(err);

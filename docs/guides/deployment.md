@@ -1,91 +1,67 @@
-# 部署指南（Deploy）
+# 部署指南（Docker）
 
-架構見 [architecture/overview.md](../architecture/overview.md)。環境變數見 [reference/environment.md](../reference/environment.md)。
+此服務以 Docker Compose 部署，並由既有反向代理處理 HTTPS 與登入。架構見 [overview.md](../architecture/overview.md)，環境變數見 [environment.md](../reference/environment.md)。
 
 ## 前置
 
-- 可從公網連線的 qBittorrent Web UI（建議 HTTPS）
-- Cloudflare 帳號（Workers）
-- 本 repo 的 GitHub Actions 權限
-- Google OAuth Client ID 與白名單 email
+- Docker Engine 與 Docker Compose plugin
+- 可從 Docker 宿主機連線的 qBittorrent Web UI
+- 已設定登入保護的既有反向代理
 
-Worker 名稱固定為 **`qb`**（`wrangler.jsonc`）。
+反向代理必須保護 `/` 和所有 `/api/qb/*`。`compose.yaml` 只發佈 `127.0.0.1:3000`，不可改成公開網卡。
 
----
-
-## 變數放哪裡
-
-### GitHub Secrets
-`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`、`QBITTORRENT_USERNAME`、`QBITTORRENT_PASSWORD`
-
-### GitHub Variables
-`ALLOWED_GOOGLE_EMAILS`、`GOOGLE_CLIENT_ID`、`QBITTORRENT_URL`
-
-### 同步進 Cloudflare Worker Secrets（Deploy 自動）
-`QBITTORRENT_URL`、`QBITTORRENT_USERNAME`、`QBITTORRENT_PASSWORD`、（若已設定）`GOOGLE_CLIENT_ID`、`ALLOWED_GOOGLE_EMAILS`
-
-### 不要放進 Worker
-`CLOUDFLARE_*`（只給 Actions 用）
-
-完整對照表見 [reference/environment.md](../reference/environment.md)、[`env/production.example`](../../env/production.example)。
-
----
-
-## 建議上線步驟
-
-1. 在 GitHub 填好 **Secrets** 與 **Variables**
-2. Push `main` 或手動跑 **Deploy to Cloudflare Workers**
-3. Cloudflare Dashboard → Workers → `qb` → 複製網址
-4. 開啟 Workers URL → Google 登入測試
-5. （可選）Safari：**分享 → 加入主畫面**
-
-Google Cloud Console 的 Authorized JavaScript origins 需包含 Workers URL 與本機 `http://localhost:3000`。
-
----
-
-## Workflow
-
-### Deploy — `.github/workflows/deploy-cloudflare.yml`
-
-觸發：push `main`／`master`，或 `workflow_dispatch`
-
-步驟：
-
-1. `npm ci`
-2. `npm run deploy`（OpenNext build + wrangler deploy）
-3. `wrangler secret bulk` 同步 runtime secrets
-
----
-
-## Cloudflare API Token 權限（參考）
-
-需能部署 Workers、管理 secrets。
-
----
-
-## 本機手動部署（可選）
+## 上線
 
 ```bash
-cp env/wrangler.development.example .dev.vars
-npm install
-npm run deploy
+git clone <repo-url> qbittorrent-web-app
+cd qbittorrent-web-app
+cp env/production.example .env
+# 編輯 .env，填入區網 qB URL、帳號與密碼
+docker compose up -d --build
 ```
 
----
+在反向代理中將公開網域轉發至 `http://127.0.0.1:3000`。qB 的 `QBITTORRENT_URL` 不得有尾端 `/`。
+
+## GitHub Packages image
+
+推送至 `main` 或建立 `v*` tag 時，GitHub Actions 會將 image 發佈到：
+
+```text
+ghcr.io/wongkino/webapp-qbittorrent
+```
+
+部署主機可改用已發佈的 image：
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+預設使用 `latest`；若要固定版本，建立 `.env` 時一併設定 `WEBAPP_IMAGE=ghcr.io/wongkino/webapp-qbittorrent:<tag>`。
+
+## 更新與操作
+
+```bash
+git pull
+docker compose pull
+docker compose up -d
+docker compose logs -f web
+docker compose down
+```
+
+`.env` 僅留在宿主機，絕不提交或寫入 image。
 
 ## 驗證清單
 
-- [ ] Workers 網址可開
-- [ ] Google 登入成功
-- [ ] Web App 能列出種子
-- [ ] 能加 magnet／URL
-
----
+- [ ] `curl http://127.0.0.1:3000` 能取得頁面
+- [ ] 非 localhost 無法連線到 port 3000
+- [ ] 未登入反向代理時，`/` 與 `/api/qb/snapshot` 均被拒絕
+- [ ] 登入後可列出種子、加入 magnet／URL 並操作 RSS
 
 ## 故障排除
 
 | 現象 | 檢查 |
 |------|------|
-| qB 502／登入失敗 | `QBITTORRENT_URL`、帳密、公網、CSRF |
-| Google 登入失敗 | `GOOGLE_CLIENT_ID`、`ALLOWED_GOOGLE_EMAILS`、Authorized origins |
-| 登入按鈕沒出現 | 建置時是否注入 `GOOGLE_CLIENT_ID`（Deploy env） |
+| qB 502／登入失敗 | `QBITTORRENT_URL`、帳密、LAN 路由與 qB CSRF 設定 |
+| 反向代理 502 | `docker compose ps`、`docker compose logs web`、代理 upstream 是否為 `127.0.0.1:3000` |
+| API 未受保護 | 確認代理的登入規則同時涵蓋 `/api/qb/*` |

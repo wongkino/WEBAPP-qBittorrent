@@ -32,7 +32,7 @@ on:
         required: true
         type: string
       commit_message:
-        description: Optional commit message (default ci: update image)
+        description: "Optional commit message (default ci: update image)"
         required: false
         type: string
     secrets:

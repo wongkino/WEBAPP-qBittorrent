@@ -123,7 +123,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font: var(--text-body);
@@ -136,7 +137,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
 }
 
 .shell {
@@ -155,12 +156,28 @@ body {
 
 .shell--app {
   max-width: none;
+  /* 瀏覽器用 dvh；iOS PWA 冷啟動時 dvh 偏短會讓底欄上浮，standalone 改用 vh */
+  height: 100%;
   height: 100dvh;
+  max-height: 100%;
+  max-height: 100dvh;
   padding: var(--safe-top) 0 0;
   gap: 0;
   position: relative;
   overflow: hidden;
   animation: none;
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .shell--app {
+    height: 100vh;
+    max-height: 100vh;
+  }
+}
+
+html[data-standalone] .shell--app {
+  height: 100vh;
+  max-height: 100vh;
 }
 
 .shell__scroll {
@@ -172,7 +189,7 @@ body {
   padding:
     var(--space-md)
     max(var(--space-md), var(--safe-right))
-    calc(88px + var(--safe-bottom))
+    var(--space-md)
     max(var(--space-md), var(--safe-left));
   max-width: 680px;
   width: 100%;
@@ -407,15 +424,14 @@ body {
 }
 
 .tab-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  /* flex 子層釘在 shell 底部；避免 iOS PWA 對 position:fixed 底欄的上移 quirk */
+  flex-shrink: 0;
   z-index: 45;
   display: flex;
   justify-content: space-around;
   align-items: stretch;
   gap: var(--space-xs);
+  width: 100%;
   min-height: calc(49px + env(safe-area-inset-bottom));
   padding:
     6px max(var(--space-sm), env(safe-area-inset-right))

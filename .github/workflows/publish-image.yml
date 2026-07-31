@@ -71,7 +71,7 @@ jobs:
   deploy-k3s:
     needs: publish
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    uses: wongkino/k3s-homelab/.github/workflows/update-k3s-manifest.yaml@main
+    uses: ./.github/workflows/update-k3s-manifest.yaml
     with:
       manifest_path: apps/diy/webapp-qbittorrent/resources.yaml
       image: ghcr.io/wongkino/webapp-qbittorrent

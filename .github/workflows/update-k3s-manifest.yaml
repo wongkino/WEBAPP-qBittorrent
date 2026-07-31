@@ -1,0 +1,90 @@
+# Reusable：build 完後更新 k3s-homelab manifest 的 image tag
+#
+# 同 repo（k3s-homelab）：
+#   secrets.token: ${{ secrets.GITHUB_TOKEN }}
+# 外部 app repo：
+#   secrets.token: ${{ secrets.K3S_HOMELAB_PAT }}  # repo secret，需 k3s-homelab write
+#
+#   deploy:
+#     needs: build
+#     uses: wongkino/k3s-homelab/.github/workflows/update-k3s-manifest.yaml@main
+#     with:
+#       manifest_path: apps/diy/my-app/resources.yaml
+#       image: ghcr.io/wongkino/my-app
+#       tag: ${{ needs.build.outputs.tag }}
+#     secrets:
+#       token: ${{ secrets.K3S_HOMELAB_PAT }}
+name: Update k3s manifest
+
+on:
+  workflow_call:
+    inputs:
+      manifest_path:
+        description: Path in k3s-homelab (e.g. apps/diy/my-app/resources.yaml)
+        required: true
+        type: string
+      image:
+        description: Full image name without tag (e.g. ghcr.io/wongkino/my-app)
+        required: true
+        type: string
+      tag:
+        description: New image tag to pin in manifest
+        required: true
+        type: string
+      commit_message:
+        description: Optional commit message (default ci: update image)
+        required: false
+        type: string
+    secrets:
+      token:
+        description: GitHub token with write access to k3s-homelab
+        required: true
+
+jobs:
+  update:
+    runs-on: homelab
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: wongkino/k3s-homelab
+          token: ${{ secrets.token }}
+          ref: main
+
+      - name: Pin image in manifest
+        env:
+          MANIFEST: ${{ inputs.manifest_path }}
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ ! -f "$MANIFEST" ]; then
+            echo "Manifest not found: $MANIFEST" >&2
+            exit 1
+          fi
+          perl -0pi -e \
+            's/\Q$ENV{IMAGE}\E(?:@sha256:[a-f0-9]+|:[^\s"'\'']+)/$ENV{IMAGE}:$ENV{TAG}/g' \
+            "$MANIFEST"
+          if git diff --quiet -- "$MANIFEST"; then
+            echo "No manifest change (image already ${IMAGE}:${TAG})"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Updated ${IMAGE} → ${TAG} in ${MANIFEST}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+        id: pin
+
+      - name: Commit and push
+        if: steps.pin.outputs.changed == 'true'
+        env:
+          MANIFEST: ${{ inputs.manifest_path }}
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+          COMMIT_MSG: ${{ inputs.commit_message }}
+        run: |
+          set -euo pipefail
+          MSG="${COMMIT_MSG:-ci: update ${IMAGE} to ${TAG}}"
+          git add "$MANIFEST"
+          git -c user.name='github-actions[bot]' \
+            -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m "$MSG"
+          git push

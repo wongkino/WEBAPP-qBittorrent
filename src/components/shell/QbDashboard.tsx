@@ -33,7 +33,7 @@ import {
 import {
   errMessage,
 } from "@/lib/api/errors";
-import { filterTorrents, type StatusFilter } from "@/lib/ui/format";
+import { filterTorrents, isPausedState, type StatusFilter } from "@/lib/ui/format";
 import {
   sortTorrents,
   torrentsEqual,
@@ -42,7 +42,8 @@ import {
   type Torrent,
 } from "@/lib/core/types";
 
-const POLL_MS = 4000;
+const POLL_MS_ACTIVE = 6000;
+const POLL_MS_IDLE = 15000;
 const COMPACT_SCROLL_Y = 56;
 const PTR_THRESHOLD = 64;
 const TAB_SWIPE_PX = 72;
@@ -57,6 +58,15 @@ function pruneSelected(prev: Set<string>, hashes: Iterable<string>) {
   const alive = new Set(hashes);
   const kept = [...prev].filter((hash) => alive.has(hash));
   return kept.length === prev.size ? prev : new Set(kept);
+}
+
+function torrentsNeedFastPoll(items: Torrent[]): boolean {
+  return items.some(
+    (t) =>
+      t.dlspeed > 0 ||
+      t.upspeed > 0 ||
+      (!isPausedState(t.state) && t.progress < 1)
+  );
 }
 
 export function QbDashboard() {
@@ -83,6 +93,8 @@ export function QbDashboard() {
   const ptrStartY = useRef<number | null>(null);
   const ptrPulling = useRef(false);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const torrentsRef = useRef(torrents);
+  torrentsRef.current = torrents;
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -255,20 +267,57 @@ export function QbDashboard() {
   }, [refreshAll]);
 
   useEffect(() => {
-    if (booting || tab !== "downloads") return;
-    const tick = () => {
+    if (booting || tab !== "downloads" || addOpen || moreOpen) return;
+
+    let id: ReturnType<typeof setInterval> | null = null;
+
+    const pollMs = () =>
+      torrentsNeedFastPoll(torrentsRef.current) ? POLL_MS_ACTIVE : POLL_MS_IDLE;
+
+    let currentMs = pollMs();
+
+    const poll = () => {
       if (document.visibilityState === "hidden") return;
-      void refreshTorrents().catch((err) =>
-        handleError(err, "app.refreshFailed")
-      );
+      void refreshTorrents()
+        .catch((err) => handleError(err, "app.refreshFailed"))
+        .finally(() => {
+          const next = pollMs();
+          if (next === currentMs || id === null) return;
+          currentMs = next;
+          window.clearInterval(id);
+          id = window.setInterval(poll, currentMs);
+        });
     };
-    const id = window.setInterval(tick, POLL_MS);
-    document.addEventListener("visibilitychange", tick);
-    return () => {
+
+    const schedule = () => {
+      if (id !== null) window.clearInterval(id);
+      currentMs = pollMs();
+      id = window.setInterval(poll, currentMs);
+    };
+
+    const stop = () => {
+      if (id === null) return;
       window.clearInterval(id);
-      document.removeEventListener("visibilitychange", tick);
+      id = null;
     };
-  }, [booting, handleError, refreshTorrents, tab]);
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        stop();
+        return;
+      }
+      poll();
+      schedule();
+    };
+
+    if (document.visibilityState !== "hidden") schedule();
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [addOpen, booting, handleError, moreOpen, refreshTorrents, tab]);
 
   async function withBusy(hash: string, action: () => Promise<void>) {
     setBusyHash(hash);

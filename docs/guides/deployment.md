@@ -8,16 +8,16 @@
 - 可從 Docker 宿主機連線的 qBittorrent Web UI
 - 已設定登入保護的既有反向代理
 
-反向代理必須保護 `/` 和所有 `/api/qb/*`。`compose.yaml` 只發佈 `127.0.0.1:3000`，不可改成公開網卡。
+反向代理必須保護 `/` 和所有 `/api/qb/*`。`deploy/compose.yaml` 只發佈 `127.0.0.1:3000`，不可改成公開網卡。
 
 ## 上線
 
 ```bash
 git clone <repo-url> qbittorrent-web-app
 cd qbittorrent-web-app
-cp env/production.example .env
-# 編輯 .env，填入區網 qB URL、帳號與密碼
-docker compose up -d --build
+cp deploy/.env.example deploy/.env
+# 編輯 deploy/.env，填入區網 qB URL、帳號與密碼
+docker compose -f deploy/compose.yaml up -d --build
 ```
 
 在反向代理中將公開網域轉發至 `http://127.0.0.1:3000`。qB 的 `QBITTORRENT_URL` 不得有尾端 `/`。
@@ -33,23 +33,23 @@ ghcr.io/wongkino/webapp-qbittorrent
 部署主機可改用已發佈的 image：
 
 ```bash
-docker compose pull
-docker compose up -d
+docker compose -f deploy/compose.yaml pull
+docker compose -f deploy/compose.yaml up -d
 ```
 
-預設使用 `latest`；若要固定版本，建立 `.env` 時一併設定 `WEBAPP_IMAGE=ghcr.io/wongkino/webapp-qbittorrent:<tag>`。
+預設使用 `latest`；若要固定版本，建立 `deploy/.env` 時一併設定 `WEBAPP_IMAGE=ghcr.io/wongkino/webapp-qbittorrent:<tag>`。
 
 ## 更新與操作
 
 ```bash
 git pull
-docker compose pull
-docker compose up -d
-docker compose logs -f web
-docker compose down
+docker compose -f deploy/compose.yaml pull
+docker compose -f deploy/compose.yaml up -d
+docker compose -f deploy/compose.yaml logs -f web
+docker compose -f deploy/compose.yaml down
 ```
 
-`.env` 僅留在宿主機，絕不提交或寫入 image。
+`deploy/.env` 僅留在部署主機，絕不提交或寫入 image。
 
 ## 驗證清單
 
@@ -63,5 +63,5 @@ docker compose down
 | 現象 | 檢查 |
 |------|------|
 | qB 502／登入失敗 | `QBITTORRENT_URL`、帳密、LAN 路由與 qB CSRF 設定 |
-| 反向代理 502 | `docker compose ps`、`docker compose logs web`、代理 upstream 是否為 `127.0.0.1:3000` |
+| 反向代理 502 | `docker compose -f deploy/compose.yaml ps`、`docker compose -f deploy/compose.yaml logs web`、代理 upstream 是否為 `127.0.0.1:3000` |
 | API 未受保護 | 確認代理的登入規則同時涵蓋 `/api/qb/*` |

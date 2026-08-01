@@ -1,9 +1,0 @@
-# ── Development only (`npm run dev`) ──
-# Next.js loads this as `.env.development.local` (not used by production builds).
-#
-#   cp env/development.example .env.development.local
-
-# qBittorrent Web UI (no trailing slash).
-QBITTORRENT_URL=http://192.168.1.10:8080
-QBITTORRENT_USERNAME=
-QBITTORRENT_PASSWORD=

@@ -7,21 +7,21 @@
 個人 **qBittorrent Web App**（PWA），以 Docker 執行並代理 qBittorrent；外部反向代理負責登入。
 
 - 部署：Docker Compose；Web App 僅綁定宿主機 localhost
-- 語系：四語，`localStorage`（`lib/i18n.ts`）
+- 語系：四語，`localStorage`（`lib/ui/i18n.ts`）
 - 白名單個人工具；勿做成 SaaS
 
 ## 分層（必記）
 
 ```
-components/* → lib/client-api.ts → app/api/qb/* → lib/qbittorrent.ts → qB
+components/* → lib/api/client.ts → app/api/qb/* → lib/qb/qbittorrent.ts → qB
 ```
 
 | 層 | 路徑 | 規則 |
 |----|------|------|
-| UI | `components/` | client only；字串 → `lib/i18n.ts` |
-| 前端 API | `lib/client-api.ts` | 只打 `/api/qb/*` |
+| UI | `components/` | client only；字串 → `lib/ui/i18n.ts` |
+| 前端 API | `lib/api/client.ts` | 只打 `/api/qb/*` |
 | Route | `app/api/qb/*/route.ts` | `withApi` 錯誤處理 |
-| qB | `lib/qbittorrent.ts` | **唯一**打 qBittorrent |
+| qB | `lib/qb/qbittorrent.ts` | **唯一**打 qBittorrent |
 
 ## 閱讀順序
 
@@ -35,10 +35,10 @@ components/* → lib/client-api.ts → app/api/qb/* → lib/qbittorrent.ts → q
 
 - `/api/qb/*` 由既有反向代理保護；不可直接公開容器 port 3000
 - qB CSRF：`Origin`/`Referer` 正確；pause 先 `stop` 再 `pause`
-- 不提交 `.env*`、`.dev.vars`
+- 不提交 `.env*`、`deploy/.env`
 - 回覆使用者用**繁體中文**
-- 新功能：`qbittorrent` → route → `client-api` → component + `i18n`（四語）
+- 新功能：`lib/qb/qbittorrent.ts` → route → `lib/api/client.ts` → component + `lib/ui/i18n.ts`（四語）
 
 ## 部署
 
-[`docs/guides/deployment.md`](docs/guides/deployment.md) · `env/production.example`
+[`docs/guides/deployment.md`](docs/guides/deployment.md) · `deploy/.env.example` · `deploy/`

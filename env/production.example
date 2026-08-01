@@ -1,8 +1,0 @@
-# ── Production Docker runtime ──
-# Copy this file to `.env` beside compose.yaml and set real values there.
-# Do NOT commit `.env`.
-# See docs/reference/environment.md and docs/guides/deployment.md.
-
-QBITTORRENT_URL=http://192.168.1.10:8080
-QBITTORRENT_USERNAME=
-QBITTORRENT_PASSWORD=

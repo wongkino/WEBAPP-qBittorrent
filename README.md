@@ -3,12 +3,12 @@
 個人 Web App（PWA），以 Docker 部署並代理 qBittorrent；既有反向代理負責登入。
 
 ```bash
-cp env/development.example .env.development.local
+cp dev/.env.example .env.development.local
 npm install && npm run dev
 
 # 正式 Docker 部署
-cp env/production.example .env
-docker compose up -d --build
+cp deploy/.env.example deploy/.env
+docker compose -f deploy/compose.yaml up -d --build
 ```
 
 → http://localhost:3000
@@ -28,7 +28,7 @@ docker compose up -d --build
 | API | [docs/reference/api-routes.md](docs/reference/api-routes.md) |
 | 環境變數 | [docs/reference/environment.md](docs/reference/environment.md) |
 
-範本檔：`env/*.example`
+範本檔：`dev/.env.example`、`deploy/.env.example`
 
 ---
 

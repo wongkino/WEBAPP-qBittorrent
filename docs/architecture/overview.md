@@ -11,20 +11,20 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Presentation（瀏覽器）                                      │
-│  app/page.tsx → components/WebApp → components/QbDashboard  │
-│  lib/client-api.ts                                             │
+│  app/page.tsx → components/shell/WebApp → components/shell/QbDashboard  │
+│  lib/api/client.ts                                             │
 └────────────────────────────┬────────────────────────────────┘
                              │ 同源 HTTP
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  API（Next.js Route Handlers）                               │
-│  app/api/qb/*/route.ts · lib/api.ts                           │
+│  app/api/qb/*/route.ts · lib/api/route.ts                           │
 └────────────────────────────┬────────────────────────────────┘
                              │ Session + CSRF
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  qBittorrent 代理                                            │
-│  lib/qbittorrent.ts → QBITTORRENT_URL                        │
+│  lib/qb/qbittorrent.ts → QBITTORRENT_URL                        │
 └─────────────────────────────────────────────────────────────┘
 
 Deploy：Docker Compose → Next.js standalone container
@@ -38,7 +38,7 @@ Deploy：Docker Compose → Next.js standalone container
 
 ### 資料操作
 
-`QbDashboard` → `client-api` → `/api/qb/*` → `qbittorrent` → qBittorrent
+`QbDashboard` → `lib/api/client` → `/api/qb/*` → `qbittorrent` → qBittorrent
 
 - 多 hash 以 `|` 串接
 - 下載分頁約每 4 秒輪詢（頁面隱藏時跳過）
@@ -57,14 +57,14 @@ Deploy：Docker Compose → Next.js standalone container
 
 | 資料 | 儲存 | 模組 |
 |------|------|------|
-| 語系 | `localStorage` | `lib/i18n.ts` |
+| 語系 | `localStorage` | `lib/ui/i18n.ts` |
 | 主題 | `localStorage` | `lib/theme.ts` |
 
 ---
 
 ## qBittorrent 連線
 
-- `Origin`／`Referer` 須符合 CSRF（`lib/qbittorrent.ts`）
+- `Origin`／`Referer` 須符合 CSRF（`lib/qb/qbittorrent.ts`）
 - Form login 不帶 Basic Auth；之後帶 SID
 - Session 快取約 55 分鐘
 - Pause/Resume：先 `stop`/`start`，再 fallback `pause`/`resume`

@@ -1,12 +1,12 @@
 # API Routes 參考
 
-`lib/client-api.ts` → `app/api/qb/*` → `lib/qbittorrent.ts` → qBittorrent。
+`lib/api/client.ts` → `app/api/qb/*` → `lib/qb/qbittorrent.ts` → qBittorrent。
 
 所有 `/api/qb/*` 由既有反向代理保護；route 透過 `withApi` 統一處理錯誤。
 
 ## 下載
 
-| client-api | HTTP |
+| lib/api/client | HTTP |
 |------------|------|
 | `fetchSnapshot` | `GET /api/qb/snapshot` |
 | `fetchTorrents` | `GET /api/qb/torrents` |
@@ -17,7 +17,7 @@
 
 ## RSS
 
-| client-api | HTTP |
+| lib/api/client | HTTP |
 |------------|------|
 | `fetchRssFeeds` | `GET /api/qb/rss` |
 | `addRssFeed` / `removeRssFeed` | `POST /api/qb/rss/add` / `remove` |

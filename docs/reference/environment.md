@@ -1,11 +1,11 @@
 # 環境變數參考
 
-範本檔位於 [`env/`](../../env/)，只提交 `.example` 檔案。
+範本檔與部署目錄合一，只提交 `.env.example`：
 
-| 檔案 | 用途 |
-|------|------|
-| `env/development.example` | 複製為 `.env.development.local`，供 `npm run dev` 使用 |
-| `env/production.example` | 複製為 `.env`，供 Docker Compose 使用 |
+| 範本 | 複製為 | 用途 |
+|------|--------|------|
+| `dev/.env.example` | `.env.development.local` | 本機 `npm run dev` / Docker dev |
+| `deploy/.env.example` | `deploy/.env` | Docker Compose 正式部署 |
 
 ## 必要變數
 
@@ -15,4 +15,4 @@
 | `QBITTORRENT_USERNAME` | qBittorrent 帳號 |
 | `QBITTORRENT_PASSWORD` | qBittorrent 密碼 |
 
-Docker 執行時由 Compose 的 `.env` 載入這些值。`.env` 是祕密檔案，僅留在部署主機、不可提交 Git 或寫入 Docker image。
+Docker 正式環境由 `deploy/compose.yaml` 載入 `deploy/.env`。祕密檔不可提交 Git 或寫入 image。

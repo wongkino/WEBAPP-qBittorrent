@@ -29,7 +29,7 @@ docs/
 | 文件 | 內容 |
 |------|------|
 | [overview.md](architecture/overview.md) | 分層、技術棧、認證、狀態、能力邊界 |
-| [codebase.md](architecture/codebase.md) | 完整目錄樹、元件／lib 分組 |
+| [codebase.md](architecture/codebase.md) | **完整檔案分類**、目錄樹、分層對照 |
 
 ### guides/
 
@@ -59,4 +59,5 @@ docs/
 |------|------|
 | [../README.md](../README.md) | 專案總覽、快速開始 |
 | [../AGENTS.md](../AGENTS.md) | AI 開發約束（Cursor 自動載入） |
-| [../env/](../env/) | 環境變數 `.example` 範本檔（非說明文件） |
+| [../dev/](../dev/) | 本機開發（env 範本 + Docker 熱更新） |
+| [../deploy/](../deploy/) | 正式 Docker 部署 |

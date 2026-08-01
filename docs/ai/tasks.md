@@ -6,14 +6,14 @@
 
 ## 新增 qBittorrent API 功能
 
-**必讀**：`lib/qbittorrent.ts`、`lib/api.ts`、任一現有 `app/api/qb/*/route.ts`
+**必讀**：`lib/qb/qbittorrent.ts`、`lib/api/route.ts`、任一現有 `app/api/qb/*/route.ts`
 
 ```
-1. lib/qbittorrent.ts          新增 qB API 封裝
-2. app/api/qb/<name>/route.ts  withApi + handleApiError
-3. lib/client-api.ts           瀏覽器 fetch 函式
+1. lib/qb/qbittorrent.ts       新增 qB API 封裝
+2. app/api/qb/<name>/route.ts  withApi
+3. lib/api/client.ts           瀏覽器 fetch 函式
 4. components/*                UI
-5. lib/i18n.ts                 四語字串（zh-Hant, zh-Hans, en, ja）
+5. lib/ui/i18n.ts              四語字串（zh-Hant, zh-Hans, en, ja）
 ```
 
 **勿**：在 component 或 route 直接 `fetch(QBITTORRENT_URL)`。
@@ -22,9 +22,9 @@
 
 ## 改 UI 或文案
 
-**必讀**：`lib/i18n.ts`、目標 `components/*.tsx`
+**必讀**：`lib/ui/i18n.ts`、目標 `components/**/*.tsx`
 
-- 字串只加在 `lib/i18n.ts` 四個 locale 區塊
+- 字串只加在 `lib/ui/i18n.ts` 四個 locale 區塊
 - 元件用 `useI18n().t("key")`
 - 新元件放 `components/`，維持現有命名風格
 
@@ -32,7 +32,7 @@
 
 ## 部署或改 CI
 
-**必讀**：`docs/guides/deployment.md`、`Dockerfile`、`compose.yaml`
+**必讀**：`docs/guides/deployment.md`、`deploy/Dockerfile`、`deploy/compose.yaml`
 
 - Secrets 不提交 repo
 - 容器 port 僅綁定 localhost，登入由外部反向代理負責
@@ -41,10 +41,10 @@
 
 ## 改環境變數
 
-**必讀**：`docs/reference/environment.md`、`env/*.example`
+**必讀**：`docs/reference/environment.md`、`dev/.env.example`、`deploy/.env.example`
 
-- 範本只放 `env/*.example`
-- 同步更新 `production.example` 與本文件
+- 範本：`dev/.env.example`、`deploy/.env.example`
+- 同步更新 `deploy/.env.example` 與本文件
 
 ---
 

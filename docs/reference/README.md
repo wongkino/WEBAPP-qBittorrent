@@ -4,7 +4,7 @@
 
 | 文件 | 內容 |
 |------|------|
-| [api-routes.md](api-routes.md) | `client-api` ↔ `/api/qb/*` ↔ qBittorrent |
-| [environment.md](environment.md) | 環境變數、範本檔、GitHub／Worker 擺放 |
+| [api-routes.md](api-routes.md) | `lib/api/client` ↔ `/api/qb/*` ↔ qBittorrent |
+| [environment.md](environment.md) | 環境變數、dev/prod 範本目錄 |
 
-範本檔實體位置：`env/*.example`
+範本：`dev/.env.example`、`deploy/.env.example`

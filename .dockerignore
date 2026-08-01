@@ -2,11 +2,9 @@
 .github
 .cursor
 .next
-.open-next
-.wrangler
 node_modules
 coverage
 .env
 .env.*
-.dev.vars
+deploy/.env
 npm-debug.log*

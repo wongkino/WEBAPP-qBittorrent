@@ -1,0 +1,12 @@
+import { jsonOk, readHashesBody, withApi } from "@/lib/api";
+import { deleteTorrents } from "@/lib/qb/qbittorrent";
+
+export const POST = withApi(async (request) => {
+  const parsed = await readHashesBody<{
+    hashes?: string;
+    deleteFiles?: boolean;
+  }>(request);
+  if (parsed instanceof Response) return parsed;
+  await deleteTorrents(parsed.hashes, Boolean(parsed.body.deleteFiles));
+  return jsonOk();
+});

@@ -1,0 +1,13 @@
+import { jsonOk, readRequiredString, withApi } from "@/lib/api";
+import { addRssFeed } from "@/lib/qb/qbittorrent";
+
+export const POST = withApi(async (request) => {
+  const parsed = await readRequiredString(request, "url");
+  if (parsed instanceof Response) return parsed;
+  const path =
+    typeof parsed.body.path === "string"
+      ? parsed.body.path.trim() || undefined
+      : undefined;
+  await addRssFeed(parsed.value, path);
+  return jsonOk();
+});

@@ -1,0 +1,11 @@
+services:
+  web:
+    image: ${WEBAPP_IMAGE:-ghcr.io/wongkino/webapp-qbittorrent:latest}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"

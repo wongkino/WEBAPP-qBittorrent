@@ -28,7 +28,7 @@ docker compose -f deploy/compose.yaml up -d --build
 | API | [docs/reference/api-routes.md](docs/reference/api-routes.md) |
 | 環境變數 | [docs/reference/environment.md](docs/reference/environment.md) |
 
-範本檔：`dev/.env.example`、`deploy/.env.example`
+範本檔：`dev/.env.example`、`deploy/.env.example` · 目錄地圖：[docs/architecture/codebase.md](docs/architecture/codebase.md)
 
 ---
 

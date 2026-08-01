@@ -13,15 +13,15 @@
 ## 分層（必記）
 
 ```
-components/* → lib/api/client.ts → app/api/qb/* → lib/qb/qbittorrent.ts → qB
+src/components/* → src/lib/api/client.ts → src/app/api/qb/* → src/lib/qb/qbittorrent.ts → qB
 ```
 
 | 層 | 路徑 | 規則 |
 |----|------|------|
-| UI | `components/` | client only；字串 → `lib/ui/i18n.ts` |
-| 前端 API | `lib/api/client.ts` | 只打 `/api/qb/*` |
-| Route | `app/api/qb/*/route.ts` | `withApi` 錯誤處理 |
-| qB | `lib/qb/qbittorrent.ts` | **唯一**打 qBittorrent |
+| UI | `src/components/` | client only；字串 → `src/lib/ui/i18n.ts` |
+| 前端 API | `src/lib/api/client.ts` | 只打 `/api/qb/*` |
+| Route | `src/app/api/qb/**/route.ts` | `withApi` 錯誤處理 |
+| qB | `src/lib/qb/qbittorrent.ts` | **唯一**打 qBittorrent |
 
 ## 閱讀順序
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Torrent } from "@/lib/types";
+import type { Torrent } from "@/lib/core/types";
 import { EmptyState } from "@/components/state/EmptyState";
 import { useI18n } from "@/components/ui/I18nProvider";
 import { InboxIcon } from "@/components/ui/icons";

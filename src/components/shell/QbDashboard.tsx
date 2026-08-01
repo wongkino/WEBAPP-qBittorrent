@@ -40,7 +40,7 @@ import {
   type SortDir,
   type SortKey,
   type Torrent,
-} from "@/lib/types";
+} from "@/lib/core/types";
 
 const POLL_MS = 4000;
 const COMPACT_SCROLL_Y = 48;

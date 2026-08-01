@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import type { SortDir, SortKey } from "@/lib/types";
+import type { SortDir, SortKey } from "@/lib/core/types";
 import { Sheet } from "@/components/ui/Sheet";
 import { useI18n } from "@/components/ui/I18nProvider";
 import {

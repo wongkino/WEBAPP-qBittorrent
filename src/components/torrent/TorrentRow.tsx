@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Torrent } from "@/lib/types";
+import type { Torrent } from "@/lib/core/types";
 import { CategorySelect } from "@/components/torrent/CategorySelect";
 import { useI18n } from "@/components/ui/I18nProvider";
 import {

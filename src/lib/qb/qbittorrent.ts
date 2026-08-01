@@ -1,5 +1,5 @@
-import { env } from "@/lib/env";
-import type { Torrent } from "@/lib/types";
+import { env } from "@/lib/core/env";
+import type { Torrent } from "@/lib/core/types";
 
 type Session = {
   cookie: string | null;

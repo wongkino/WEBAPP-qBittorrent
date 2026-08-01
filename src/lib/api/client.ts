@@ -1,5 +1,5 @@
 import type { RssFeed } from "@/lib/qb/qbittorrent";
-import type { Torrent } from "@/lib/types";
+import type { Torrent } from "@/lib/core/types";
 
 async function parseError(res: Response): Promise<string> {
   try {

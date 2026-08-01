@@ -269,7 +269,7 @@ export function QbDashboard() {
   useEffect(() => {
     if (booting || tab !== "downloads" || addOpen || moreOpen) return;
 
-    let id: ReturnType<typeof setInterval> | null = null;
+    let id: number | null = null;
 
     const pollMs = () =>
       torrentsNeedFastPoll(torrentsRef.current) ? POLL_MS_ACTIVE : POLL_MS_IDLE;

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:env": "cp dev/.env.example .env.development.local",
-    "dev:docker": "docker compose -f dev/docker/compose.yaml up --build",
+    "dev:docker": "DEV_ALLOWED_ORIGINS=$(node dev/scripts/lan-ip.mjs) docker compose -f dev/docker/compose.yaml up --build",
     "dev:docker:down": "docker compose -f dev/docker/compose.yaml down",
     "build": "next build",
     "start": "next start",

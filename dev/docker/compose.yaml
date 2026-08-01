@@ -7,13 +7,14 @@ services:
       - ../../.env.development.local
     environment:
       WATCHPACK_POLLING: "true"
+      DEV_ALLOWED_ORIGINS: ${DEV_ALLOWED_ORIGINS:-}
     volumes:
       - ../..:/app
       - web_node_modules:/app/node_modules
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "127.0.0.1:3000:3000"
+      - "0.0.0.0:3000:3000"
 
 volumes:
   web_node_modules:

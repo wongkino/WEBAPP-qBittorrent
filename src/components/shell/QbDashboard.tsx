@@ -43,7 +43,7 @@ import {
 } from "@/lib/core/types";
 
 const POLL_MS = 4000;
-const COMPACT_SCROLL_Y = 48;
+const COMPACT_SCROLL_Y = 56;
 const PTR_THRESHOLD = 64;
 const TAB_SWIPE_PX = 72;
 
@@ -80,7 +80,6 @@ export function QbDashboard() {
   const [online, setOnline] = useState(true);
   const [tabDir, setTabDir] = useState<"left" | "right">("left");
   const refreshInflight = useRef(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const ptrStartY = useRef<number | null>(null);
   const ptrPulling = useRef(false);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
@@ -90,24 +89,53 @@ export function QbDashboard() {
   }, [locale]);
 
   useEffect(() => {
-    if (booting) return;
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const resetScroll = () => {
-      if (el.scrollTop < 0) el.scrollTop = 0;
+    const scrollTop = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
     };
 
-    resetScroll();
-    const raf = requestAnimationFrame(resetScroll);
-    const timer = window.setTimeout(resetScroll, 0);
+    scrollTop();
+    const raf = requestAnimationFrame(scrollTop);
+    const timer = window.setTimeout(scrollTop, 0);
 
-    window.visualViewport?.addEventListener("resize", resetScroll);
+    window.visualViewport?.addEventListener("resize", scrollTop);
+    window.addEventListener("pageshow", scrollTop);
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(timer);
-      window.visualViewport?.removeEventListener("resize", resetScroll);
+      window.visualViewport?.removeEventListener("resize", scrollTop);
+      window.removeEventListener("pageshow", scrollTop);
     };
+  }, []);
+
+  useEffect(() => {
+    if (booting) return;
+
+    const scrollTop = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+
+    scrollTop();
+    const raf = requestAnimationFrame(scrollTop);
+    const timer = window.setTimeout(scrollTop, 50);
+
+    window.visualViewport?.addEventListener("resize", scrollTop);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+      window.visualViewport?.removeEventListener("resize", scrollTop);
+    };
+  }, [booting]);
+
+  useEffect(() => {
+    if (booting) return;
+    const onScroll = () => setCompact(window.scrollY > COMPACT_SCROLL_Y);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, [booting]);
 
   useEffect(() => {
@@ -142,6 +170,8 @@ export function QbDashboard() {
     },
     [t]
   );
+  const handleErrorRef = useRef(handleError);
+  handleErrorRef.current = handleError;
 
   const applySnapshot = useCallback((next: SnapshotData) => {
     setTorrents((prev) =>
@@ -206,7 +236,7 @@ export function QbDashboard() {
     setTab((prev) => (prev === next ? prev : next));
     setTabDir(dir ?? (next === "rss" ? "left" : "right"));
     setMoreOpen(false);
-    scrollRef.current?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
     setCompact(false);
   }
 
@@ -214,7 +244,7 @@ export function QbDashboard() {
     let cancelled = false;
     void refreshAll()
       .catch((err) => {
-        if (!cancelled) handleError(err, "app.refreshFailed");
+        if (!cancelled) handleErrorRef.current(err, "app.refreshFailed");
       })
       .finally(() => {
         if (!cancelled) setBooting(false);
@@ -222,7 +252,7 @@ export function QbDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [handleError, refreshAll]);
+  }, [refreshAll]);
 
   useEffect(() => {
     if (booting || tab !== "downloads") return;
@@ -261,19 +291,17 @@ export function QbDashboard() {
     });
   }
 
-  function onPtrDown(event: ReactPointerEvent<HTMLDivElement>) {
+  function onPtrDown(event: ReactPointerEvent<HTMLElement>) {
     swipeStart.current = { x: event.clientX, y: event.clientY };
     if (ptrRefreshing) return;
-    const el = scrollRef.current;
-    if (!el || el.scrollTop > 0) return;
+    if (window.scrollY > 0) return;
     ptrStartY.current = event.clientY;
     ptrPulling.current = true;
   }
 
-  function onPtrMove(event: ReactPointerEvent<HTMLDivElement>) {
+  function onPtrMove(event: ReactPointerEvent<HTMLElement>) {
     if (!ptrPulling.current || ptrStartY.current == null) return;
-    const el = scrollRef.current;
-    if (!el || el.scrollTop > 0) {
+    if (window.scrollY > 0) {
       ptrPulling.current = false;
       setPtrPull(0);
       return;
@@ -281,7 +309,7 @@ export function QbDashboard() {
     setPtrPull(Math.min(Math.max(0, event.clientY - ptrStartY.current) * 0.45, 96));
   }
 
-  async function onPtrUp(event: ReactPointerEvent<HTMLDivElement>) {
+  async function onPtrUp(event: ReactPointerEvent<HTMLElement>) {
     const start = swipeStart.current;
     swipeStart.current = null;
     if (start && !moreOpen && !addOpen) {
@@ -327,25 +355,21 @@ export function QbDashboard() {
   const showOfflineEmpty = !online && torrents.length === 0;
 
   return (
-    <main className="shell shell--app">
-      <div
-        className={`nav-compact${compact ? " nav-compact--visible" : ""}`}
-        aria-hidden={!compact}
-      >
-        <span className="nav-compact__title">qBittorrent</span>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="shell__scroll"
-        onScroll={() =>
-          setCompact((scrollRef.current?.scrollTop ?? 0) > COMPACT_SCROLL_Y)
-        }
+    <>
+      <main
+        className="shell shell--app"
         onPointerDown={onPtrDown}
         onPointerMove={onPtrMove}
         onPointerUp={(event) => void onPtrUp(event)}
         onPointerCancel={resetPointers}
       >
+        <div
+          className={`nav-compact${compact ? " nav-compact--visible" : ""}`}
+          aria-hidden={!compact}
+        >
+          <span className="nav-compact__title">qBittorrent</span>
+        </div>
+
         <InstallBanner />
 
         {!online && torrents.length > 0 ? (
@@ -458,7 +482,7 @@ export function QbDashboard() {
             )}
           </div>
         )}
-      </div>
+      </main>
 
       {tab === "downloads" && online ? (
         <button
@@ -503,6 +527,6 @@ export function QbDashboard() {
           </div>
         </Sheet>
       ) : null}
-    </main>
+    </>
   );
 }

@@ -1,19 +1,18 @@
 :root,
 html[data-theme="light"] {
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  /* Apple light */
-  --bg-primary: #ffffff;
+  /* Apple light — 對齊 hk_traffic_tools day */
+  --bg-primary: #f5f5f7;
   --bg-secondary: #f5f5f7;
+  --bg-card: #ffffff;
   --bg-elevated: rgba(255, 255, 255, 0.82);
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
+  --text-tertiary: #6e6e73;
   --accent: #0071e3;
   --accent-text: #ffffff;
   --danger: #ff3b30;
   --border: rgba(0, 0, 0, 0.06);
+  --border-color: var(--border);
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   --fill-tertiary: rgba(120, 120, 128, 0.12);
   --separator: rgba(60, 60, 67, 0.12);
@@ -26,18 +25,24 @@ html[data-theme="light"] {
   --button-text: var(--accent-text);
   --secondary: var(--bg-secondary);
 
-  /* Typography */
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    "Segoe UI", sans-serif;
-  --text-hero: 600 34px/1.1 var(--font);
-  --text-title: 600 22px/1.2 var(--font);
+  /* Apple UI — typography (hero / title / body / caption) */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+    sans-serif;
+  --text-hero: 600 48px/1.1 var(--font);
+  --text-title: 600 32px/1.2 var(--font);
   --text-body: 400 17px/1.5 var(--font);
   --text-caption: 400 13px/1.4 var(--font);
+
+  /* Apple UI — surfaces */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.05);
+  --card-blur: blur(20px);
 
   /* Spacing rhythm */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
+  --spacing-md: 12px;
   --space-lg: 24px;
   --space-xl: 48px;
   --space-2xl: 96px;
@@ -46,22 +51,32 @@ html[data-theme="light"] {
   --radius-sm: 12px;
   --radius-pill: 980px;
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration: 0.3s;
   --touch: 44px;
+  --tab-bar-height: 0px;
+  --tab-bar-items: 36px;
+  --app-header-compact-height: 44px;
+  --tab-bar-chrome: var(--tab-bar-items);
   color-scheme: light;
 }
 
 html[data-theme="dark"] {
   --bg-primary: #000000;
   --bg-secondary: #1d1d1f;
+  --bg-card: #1d1d1f;
   --bg-elevated: rgba(29, 29, 31, 0.86);
   --text-primary: #f5f5f7;
   --text-secondary: #98989d;
+  --text-tertiary: #6e6e73;
   --accent: #0a84ff;
   --danger: #ff453a;
   --border: rgba(255, 255, 255, 0.08);
+  --border-color: var(--border);
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
   --fill-tertiary: rgba(120, 120, 128, 0.24);
   --separator: rgba(84, 84, 88, 0.45);
+  --card-bg: rgba(29, 29, 31, 0.82);
+  --card-border: rgba(255, 255, 255, 0.08);
   color-scheme: dark;
 }
 
@@ -70,14 +85,19 @@ html[data-theme="dark"] {
   :root:not([data-theme]) {
     --bg-primary: #000000;
     --bg-secondary: #1d1d1f;
+    --bg-card: #1d1d1f;
     --bg-elevated: rgba(29, 29, 31, 0.86);
     --text-primary: #f5f5f7;
     --text-secondary: #98989d;
+    --text-tertiary: #6e6e73;
     --danger: #ff453a;
     --border: rgba(255, 255, 255, 0.08);
+    --border-color: var(--border);
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
     --fill-tertiary: rgba(120, 120, 128, 0.24);
     --separator: rgba(84, 84, 88, 0.45);
+    --card-bg: rgba(29, 29, 31, 0.82);
+    --card-border: rgba(255, 255, 255, 0.08);
     color-scheme: dark;
   }
 }
@@ -85,7 +105,7 @@ html[data-theme="dark"] {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -119,12 +139,18 @@ html[data-theme="dark"] {
   box-sizing: border-box;
 }
 
+html {
+  background: var(--bg);
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
 html,
 body {
   margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font: var(--text-body);
@@ -133,70 +159,102 @@ body {
 }
 
 body {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding:
+    var(--spacing-md)
+    var(--spacing-md)
+    var(--tab-bar-chrome)
+    var(--spacing-md);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
+}
+
+/* iOS／Android — 對齊 hk .mobile-adaptive：固定高度捲動容器（min-height 在 WebKit PWA 冷啟動會錯位） */
+html.mobile-adaptive,
+html[data-standalone] {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+html.mobile-adaptive body,
+html[data-standalone] body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+/* 行動版：底欄 fixed 疊在底部，不在 tab-panel 預留高度（避免卡片下方黑帶） */
+html.mobile-adaptive .shell--app,
+html[data-standalone] .shell--app {
+  flex: 1 1 auto;
+  padding-bottom: 0;
+}
+
+/* 可捲動內容才預留底欄空間 */
+html.mobile-adaptive .inset-group.torrent-list,
+html[data-standalone] .inset-group.torrent-list,
+html.mobile-adaptive .rss,
+html[data-standalone] .rss {
+  padding-bottom: var(--tab-bar-chrome);
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  html {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+    padding-bottom: 0;
+  }
 }
 
 .shell {
   max-width: 680px;
   margin: 0 auto;
   padding:
-    max(var(--space-md), env(safe-area-inset-top))
-    max(var(--space-md), env(safe-area-inset-right))
-    max(var(--space-xl), env(safe-area-inset-bottom))
-    max(var(--space-md), env(safe-area-inset-left));
+    var(--space-md)
+    var(--space-md)
+    var(--space-xl)
+    var(--space-md);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  animation: fadeUp 0.45s var(--ease) both;
+  animation: fadeUp var(--duration) var(--ease) both;
 }
 
+/* 主內容區 — 對齊 hk .main-container */
 .shell--app {
-  max-width: none;
-  /* 瀏覽器用 dvh；iOS PWA 冷啟動時 dvh 偏短會讓底欄上浮，standalone 改用 vh */
-  height: 100%;
-  height: 100dvh;
-  max-height: 100%;
-  max-height: 100dvh;
-  padding: var(--safe-top) 0 0;
-  gap: 0;
-  position: relative;
-  overflow: hidden;
-  animation: none;
-}
-
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .shell--app {
-    height: 100vh;
-    max-height: 100vh;
-  }
-}
-
-html[data-standalone] .shell--app {
-  height: 100vh;
-  max-height: 100vh;
-}
-
-.shell__scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-  padding:
-    var(--space-md)
-    max(var(--space-md), var(--safe-right))
-    var(--space-md)
-    max(var(--space-md), var(--safe-left));
-  max-width: 680px;
   width: 100%;
+  max-width: 680px;
   margin: 0 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  animation: none;
 }
 
 .nav-compact {
@@ -209,20 +267,19 @@ html[data-standalone] .shell--app {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  min-height: calc(44px + var(--safe-top));
-  padding:
-    var(--safe-top)
-    max(var(--space-md), var(--safe-right))
-    8px
-    max(var(--space-md), var(--safe-left));
-  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid var(--separator);
+  min-height: 44px;
+  padding: var(--space-md);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border-bottom: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
   opacity: 0;
   transform: translateY(-8px);
   pointer-events: none;
-  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+  transition:
+    opacity var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
 }
 
 .nav-compact--visible {
@@ -357,9 +414,12 @@ html[data-standalone] .shell--app {
   gap: var(--space-sm);
   padding: 12px 14px;
   border-radius: var(--radius);
-  background: var(--bg-secondary);
-  border: 1px solid var(--separator);
-  animation: fadeUp 0.35s var(--ease) both;
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+  animation: fadeUp var(--duration) var(--ease) both;
 }
 
 .install-banner__body {
@@ -402,8 +462,8 @@ html[data-standalone] .shell--app {
 
 .fab {
   position: fixed;
-  right: max(var(--space-md), env(safe-area-inset-right));
-  bottom: calc(64px + env(safe-area-inset-bottom));
+  right: var(--space-md);
+  bottom: calc(var(--tab-bar-chrome) + 12px);
   z-index: 35;
   width: 56px;
   height: 56px;
@@ -411,11 +471,13 @@ html[data-standalone] .shell--app {
   border-radius: 50%;
   background: var(--accent);
   color: var(--accent-text);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 40%, transparent);
+  box-shadow: var(--shadow);
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: transform 0.2s var(--ease), filter 0.2s var(--ease);
+  transition:
+    transform var(--duration) var(--ease),
+    filter var(--duration) var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -423,55 +485,85 @@ html[data-standalone] .shell--app {
   transform: scale(0.94);
 }
 
-.tab-bar {
-  /* flex 子層釘在 shell 底部；避免 iOS PWA 對 position:fixed 底欄的上移 quirk */
-  flex-shrink: 0;
-  z-index: 45;
+/* 底部 Tab Bar — fixed，不隨內容捲動 */
+.app-tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
   display: flex;
+  align-items: flex-end;
   justify-content: space-around;
-  align-items: stretch;
-  gap: var(--space-xs);
-  width: 100%;
-  min-height: calc(49px + env(safe-area-inset-bottom));
-  padding:
-    6px max(var(--space-sm), env(safe-area-inset-right))
-    calc(6px + env(safe-area-inset-bottom))
-    max(var(--space-sm), env(safe-area-inset-left));
-  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border-top: 1px solid var(--separator);
+  padding: 0 4px;
+  background: var(--bg);
+  border-top: 1px solid var(--border-color);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  pointer-events: auto;
 }
 
-.tab-bar__item {
+html[data-standalone] .app-tab-bar {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+html[data-standalone] .app-tab-bar__label {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.app-tab-bar__item {
   flex: 1;
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--hint);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  min-height: var(--touch);
-  padding: 4px 6px;
-  font: var(--text-caption);
+  gap: 1px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  transition: color 0.2s var(--ease), transform 0.15s var(--ease);
+}
+
+.app-tab-bar__item:active {
+  transform: scale(0.94);
+}
+
+.app-tab-bar__item.is-active {
+  color: var(--accent);
+}
+
+.app-tab-bar__label {
   font-size: 10px;
   font-weight: 500;
+  line-height: 1;
   letter-spacing: -0.01em;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: color 0.2s var(--ease), transform 0.15s var(--ease);
-  -webkit-tap-highlight-color: transparent;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.tab-bar__item:active {
-  transform: scale(0.96);
-}
-
-.tab-bar__item--active {
-  color: var(--accent);
+.app-tab-bar__icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
 }
 
 .sheet {
@@ -503,12 +595,16 @@ html[data-standalone] .shell--app {
   max-height: min(92dvh, 720px);
   display: flex;
   flex-direction: column;
-  background: var(--bg-secondary);
-  border-radius: 16px 16px 0 0;
-  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding-bottom: var(--space-md);
   transform: translateY(100%);
   transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--card-border);
+  border-bottom: none;
 }
 
 .sheet--open .sheet__panel {
@@ -600,7 +696,7 @@ html[data-standalone] .shell--app {
 .title {
   margin: 0;
   font: var(--text-hero);
-  font-size: clamp(28px, 7vw, 34px);
+  font-size: clamp(32px, 8vw, 48px);
   letter-spacing: -0.03em;
   color: var(--text);
 }
@@ -624,10 +720,13 @@ html[data-standalone] .shell--app {
 .empty {
   padding: var(--space-xl) var(--space-md);
   text-align: center;
-  background: var(--bg-secondary);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border-radius: var(--radius);
-  border: 1px solid var(--border);
-  animation: fadeUp 0.4s var(--ease) both;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+  animation: fadeUp var(--duration) var(--ease) both;
 }
 
 .empty--state {
@@ -753,10 +852,13 @@ html[data-standalone] .shell--app {
 .inset-group {
   display: flex;
   flex-direction: column;
-  background: var(--bg-secondary);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid var(--separator);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
 }
 
 .torrent-list {
@@ -969,9 +1071,12 @@ html[data-standalone] .shell--app {
 .settings-group__card {
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border-radius: var(--radius);
-  border: 1px solid var(--separator);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
@@ -1036,15 +1141,18 @@ html[data-standalone] .shell--app {
   background: var(--fill-tertiary);
   color: var(--text);
   border-radius: var(--radius-pill);
-  padding: 10px 18px;
+  padding: 12px 24px;
   min-height: var(--touch);
   font: var(--text-caption);
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
   cursor: pointer;
-  transition: transform 0.2s var(--ease), filter 0.2s var(--ease),
-    background 0.2s var(--ease), opacity 0.2s var(--ease);
+  transition:
+    transform var(--duration) var(--ease),
+    filter var(--duration) var(--ease),
+    background var(--duration) var(--ease),
+    opacity var(--duration) var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 

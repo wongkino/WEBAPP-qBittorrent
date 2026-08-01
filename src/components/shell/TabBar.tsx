@@ -20,33 +20,42 @@ export function TabBar({ tab, moreOpen, onTabChange, onMore }: Props) {
   const { t } = useI18n();
 
   return (
-    <nav className="tab-bar" aria-label={t("app.nav")}>
+    <nav className="app-tab-bar" aria-label={t("app.nav")}>
       <button
         type="button"
-        className={`tab-bar__item${tab === "downloads" && !moreOpen ? " tab-bar__item--active" : ""}`}
+        className={`app-tab-bar__item${tab === "downloads" && !moreOpen ? " is-active" : ""}`}
         onClick={() => onTabChange("downloads")}
+        aria-label={t("app.tab.downloads")}
         aria-current={tab === "downloads" && !moreOpen ? "page" : undefined}
       >
-        <DownloadIcon size={22} />
-        <span>{t("app.tab.downloads")}</span>
+        <span className="app-tab-bar__icon" aria-hidden="true">
+          <DownloadIcon size={24} />
+        </span>
+        <span className="app-tab-bar__label">{t("app.tab.downloads")}</span>
       </button>
       <button
         type="button"
-        className={`tab-bar__item${tab === "rss" && !moreOpen ? " tab-bar__item--active" : ""}`}
+        className={`app-tab-bar__item${tab === "rss" && !moreOpen ? " is-active" : ""}`}
         onClick={() => onTabChange("rss")}
+        aria-label={t("app.tab.rss")}
         aria-current={tab === "rss" && !moreOpen ? "page" : undefined}
       >
-        <RssIcon size={22} />
-        <span>{t("app.tab.rss")}</span>
+        <span className="app-tab-bar__icon" aria-hidden="true">
+          <RssIcon size={24} />
+        </span>
+        <span className="app-tab-bar__label">{t("app.tab.rss")}</span>
       </button>
       <button
         type="button"
-        className={`tab-bar__item${moreOpen ? " tab-bar__item--active" : ""}`}
+        className={`app-tab-bar__item${moreOpen ? " is-active" : ""}`}
         onClick={onMore}
+        aria-label={t("app.tab.more")}
         aria-expanded={moreOpen}
       >
-        <EllipsisIcon size={22} />
-        <span>{t("app.tab.more")}</span>
+        <span className="app-tab-bar__icon" aria-hidden="true">
+          <EllipsisIcon size={24} />
+        </span>
+        <span className="app-tab-bar__label">{t("app.tab.more")}</span>
       </button>
     </nav>
   );

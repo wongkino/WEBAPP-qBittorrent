@@ -12,7 +12,7 @@ qbittorrent-web-app/
 │   ├── app/                    # Next.js 頁面 + API
 │   ├── components/             # UI（shell / torrent / rss / …）
 │   └── lib/                    # 邏輯（api / qb / ui / core）
-├── public/                     # PWA 靜態資源
+├── public/                     # PWA 靜態資源（manifest、icons、sw.js）
 ├── dev/                        # 本機開發（.env.example + docker/）
 ├── deploy/                     # 正式部署（.env.example + Docker）
 ├── config/                     # 工具設定（eslint）
@@ -46,7 +46,7 @@ qbittorrent-web-app/
 | `state/` | Loading、Empty、Offline |
 | `settings/` | 主題、語系、PWA 提示 |
 | `ui/` | Sheet、icons、I18nProvider |
-| `boot/` | SafeArea、Theme 啟動腳本 |
+| `boot/` | SafeArea、Theme、Service Worker 啟動腳本 |
 
 ---
 

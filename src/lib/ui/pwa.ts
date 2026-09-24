@@ -1,5 +1,16 @@
 export const INSTALL_DISMISS_KEY = "tg-dl-install-dismissed";
 
+/** 正式環境註冊 `/sw.js`（Chrome 可安裝條件需要有 fetch handler 的 SW） */
+export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === "undefined") return null;
+  if (!("serviceWorker" in navigator)) return null;
+  try {
+    return await navigator.serviceWorker.register("/sw.js");
+  } catch {
+    return null;
+  }
+}
+
 export function isStandaloneWebApp(): boolean {
   if (typeof window === "undefined") return false;
   return (

@@ -39,8 +39,35 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Service Worker 必須可即時更新，不可長期快取
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+          {
+            key: "Service-Worker-Allowed",
+            value: "/",
+          },
+        ],
+      },
+      {
+        source: "/manifest.webmanifest",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, must-revalidate",
+          },
+          {
+            key: "Content-Type",
+            value: "application/manifest+json",
+          },
+        ],
+      },
+      {
         // iOS 主畫面 PWA 會快取 HTML；避免長期卡在舊版 UI
-        source: "/((?!api|_next|favicon|icon|manifest).*)",
+        source: "/((?!api|_next|favicon|icon|manifest|sw\\.js).*)",
         headers: [
           {
             key: "Cache-Control",

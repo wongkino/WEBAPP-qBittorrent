@@ -6,7 +6,7 @@
 
 1. 開啟反向代理提供的 Web App 網址並完成代理登入。
 2. 進入後會自動載入 qBittorrent 的下載列表。
-3. 可選擇 Safari 的「分享 → 加入主畫面」安裝 PWA。
+3. 可安裝為 PWA：Chrome／Edge 會出現安裝提示；Safari 用「分享 → 加入主畫面」。
 
 ## 功能
 

@@ -2,7 +2,7 @@
 
 import { EmptyState } from "@/components/state/EmptyState";
 import { useI18n } from "@/components/ui/I18nProvider";
-import { InboxIcon } from "@/components/ui/icons";
+import { OfflineIcon } from "@/components/ui/icons";
 
 type Props = {
   onRetry?: () => void;
@@ -12,7 +12,7 @@ export function OfflineState({ onRetry }: Props) {
   const { t } = useI18n();
   return (
     <EmptyState
-      icon={<InboxIcon size={28} />}
+      icon={<OfflineIcon size={28} />}
       title={t("pwa.offlineTitle")}
       hint={t("pwa.offlineHint")}
       action={

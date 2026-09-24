@@ -11,6 +11,7 @@
     "start": "next start",
     "prod:env": "cp deploy/.env.example deploy/.env",
     "prod:up": "docker compose -f deploy/compose.yaml up -d --build",
+    "icons:gen": "node scripts/generate-pwa-icons.mjs",
     "lint": "eslint"
   },
   "dependencies": {

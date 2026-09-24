@@ -18,30 +18,32 @@ type Props = {
 
 export function TabBar({ tab, moreOpen, onTabChange, onMore }: Props) {
   const { t } = useI18n();
+  const downloadsActive = tab === "downloads" && !moreOpen;
+  const rssActive = tab === "rss" && !moreOpen;
 
   return (
     <nav className="app-tab-bar" aria-label={t("app.nav")}>
       <button
         type="button"
-        className={`app-tab-bar__item${tab === "downloads" && !moreOpen ? " is-active" : ""}`}
+        className={`app-tab-bar__item${downloadsActive ? " is-active" : ""}`}
         onClick={() => onTabChange("downloads")}
         aria-label={t("app.tab.downloads")}
-        aria-current={tab === "downloads" && !moreOpen ? "page" : undefined}
+        aria-current={downloadsActive ? "page" : undefined}
       >
         <span className="app-tab-bar__icon" aria-hidden="true">
-          <DownloadIcon size={24} />
+          <DownloadIcon size={24} filled={downloadsActive} />
         </span>
         <span className="app-tab-bar__label">{t("app.tab.downloads")}</span>
       </button>
       <button
         type="button"
-        className={`app-tab-bar__item${tab === "rss" && !moreOpen ? " is-active" : ""}`}
+        className={`app-tab-bar__item${rssActive ? " is-active" : ""}`}
         onClick={() => onTabChange("rss")}
         aria-label={t("app.tab.rss")}
-        aria-current={tab === "rss" && !moreOpen ? "page" : undefined}
+        aria-current={rssActive ? "page" : undefined}
       >
         <span className="app-tab-bar__icon" aria-hidden="true">
-          <RssIcon size={24} />
+          <RssIcon size={24} filled={rssActive} />
         </span>
         <span className="app-tab-bar__label">{t("app.tab.rss")}</span>
       </button>
@@ -53,7 +55,7 @@ export function TabBar({ tab, moreOpen, onTabChange, onMore }: Props) {
         aria-expanded={moreOpen}
       >
         <span className="app-tab-bar__icon" aria-hidden="true">
-          <EllipsisIcon size={24} />
+          <EllipsisIcon size={24} filled={moreOpen} />
         </span>
         <span className="app-tab-bar__label">{t("app.tab.more")}</span>
       </button>

@@ -58,6 +58,9 @@ export function InstallBanner() {
 
   return (
     <div className="install-banner" role="status">
+      <div className="install-banner__icon" aria-hidden="true">
+        <img src="/icon-192.png" alt="" width={40} height={40} />
+      </div>
       <div className="install-banner__body">
         <p className="install-banner__title">{t("pwa.installTitle")}</p>
         <p className="install-banner__hint">

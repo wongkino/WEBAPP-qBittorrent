@@ -2,24 +2,48 @@ import type { ReactNode } from "react";
 
 type IconProps = {
   size?: number;
+  filled?: boolean;
+  className?: string;
 };
 
 function Icon({
   size = 18,
+  className,
   children,
+  filled = false,
 }: IconProps & { children: ReactNode }) {
   return (
     <svg
-      className="icon"
+      className={className ? `icon ${className}` : "icon"}
       viewBox="0 0 24 24"
       width={size}
       height={size}
       aria-hidden="true"
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth={filled ? 0 : 1.6}
       strokeLinecap="round"
       strokeLinejoin="round"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function FilledIcon({
+  size = 18,
+  className,
+  children,
+}: IconProps & { children: ReactNode }) {
+  return (
+    <svg
+      className={className ? `icon ${className}` : "icon"}
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      aria-hidden="true"
+      fill="currentColor"
+      stroke="none"
     >
       {children}
     </svg>
@@ -90,7 +114,15 @@ export function BatchDoneIcon(props: IconProps) {
   );
 }
 
-export function PauseIcon(props: IconProps) {
+export function PauseIcon({ filled, ...props }: IconProps) {
+  if (filled) {
+    return (
+      <FilledIcon {...props}>
+        <rect x="5" y="4" width="5" height="16" rx="1.5" />
+        <rect x="14" y="4" width="5" height="16" rx="1.5" />
+      </FilledIcon>
+    );
+  }
   return (
     <Icon {...props}>
       <rect x="6" y="5" width="4" height="14" rx="1" />
@@ -99,7 +131,14 @@ export function PauseIcon(props: IconProps) {
   );
 }
 
-export function ResumeIcon(props: IconProps) {
+export function ResumeIcon({ filled, ...props }: IconProps) {
+  if (filled) {
+    return (
+      <FilledIcon {...props}>
+        <path d="M7 4.5v15l12-7.5-12-7.5z" />
+      </FilledIcon>
+    );
+  }
   return (
     <Icon {...props}>
       <path d="M7 5.5v13l11-6.5-11-6.5z" />
@@ -145,7 +184,15 @@ export function AddIcon(props: IconProps) {
   );
 }
 
-export function DownloadIcon(props: IconProps) {
+export function DownloadIcon({ filled, ...props }: IconProps) {
+  if (filled) {
+    return (
+      <FilledIcon {...props}>
+        <path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16.3 6.3 10.3l1.4-1.4L11 12.2V3z" />
+        <path d="M4 18h16v2H4z" />
+      </FilledIcon>
+    );
+  }
   return (
     <Icon {...props}>
       <path d="M12 3v12" />
@@ -176,7 +223,16 @@ export function SelectAllIcon(props: IconProps) {
   );
 }
 
-export function RssIcon(props: IconProps) {
+export function RssIcon({ filled, ...props }: IconProps) {
+  if (filled) {
+    return (
+      <FilledIcon {...props}>
+        <circle cx="5.5" cy="18.5" r="2.25" />
+        <path d="M4 11.25a8.75 8.75 0 0 1 8.75 8.75h-2.5A6.25 6.25 0 0 0 4 13.75v-2.5z" />
+        <path d="M4 4.5A15.5 15.5 0 0 1 19.5 20h-2.5A13 13 0 0 0 4 7V4.5z" />
+      </FilledIcon>
+    );
+  }
   return (
     <Icon {...props}>
       <path d="M4 11a9 9 0 0 1 9 9" />
@@ -186,13 +242,14 @@ export function RssIcon(props: IconProps) {
   );
 }
 
-export function EllipsisIcon(props: IconProps) {
+export function EllipsisIcon({ filled, ...props }: IconProps) {
+  const r = filled ? 1.75 : 1.35;
   return (
-    <Icon {...props}>
-      <circle cx="6" cy="12" r="1.25" fill="currentColor" stroke="none" />
-      <circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none" />
-      <circle cx="18" cy="12" r="1.25" fill="currentColor" stroke="none" />
-    </Icon>
+    <FilledIcon {...props}>
+      <circle cx="6" cy="12" r={r} />
+      <circle cx="12" cy="12" r={r} />
+      <circle cx="18" cy="12" r={r} />
+    </FilledIcon>
   );
 }
 
@@ -222,6 +279,19 @@ export function InboxIcon(props: IconProps) {
   );
 }
 
+/** 離線空狀態 — 斜線 Wi‑Fi */
+export function OfflineIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M2 8.82A15.94 15.94 0 0 1 12 5c3.2 0 6.15.94 8.64 2.55" />
+      <path d="M5.07 12.14A10.94 10.94 0 0 1 12 10c2.1 0 4.05.58 5.72 1.6" />
+      <path d="M8.53 15.39A5.97 5.97 0 0 1 12 14.5c.95 0 1.84.2 2.65.56" />
+      <circle cx="12" cy="19" r="1.25" fill="currentColor" stroke="none" />
+      <path d="m3 3 18 18" />
+    </Icon>
+  );
+}
+
 export function SpinnerIcon(props: IconProps) {
   return (
     <Icon {...props}>
@@ -229,3 +299,5 @@ export function SpinnerIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export type { IconProps };

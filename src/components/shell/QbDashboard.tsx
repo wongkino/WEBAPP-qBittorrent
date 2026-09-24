@@ -15,7 +15,7 @@ import { LanguageToggle } from "@/components/settings/LanguageToggle";
 import { ListToolbar } from "@/components/torrent/ListToolbar";
 import { LoadingState } from "@/components/state/LoadingState";
 import { OfflineState } from "@/components/state/OfflineState";
-import { AddIcon } from "@/components/ui/icons";
+import { AddIcon, RefreshIcon } from "@/components/ui/icons";
 import { RssPanel } from "@/components/rss/RssPanel";
 import { Sheet } from "@/components/ui/Sheet";
 import { TabBar, type AppTab } from "@/components/shell/TabBar";
@@ -423,21 +423,29 @@ export function QbDashboard() {
 
         {!online && torrents.length > 0 ? (
           <p className="offline-banner" role="status">
+            <span className="offline-banner__dot" aria-hidden="true" />
             {t("pwa.offlineBanner")}
           </p>
         ) : null}
 
         <div
-          className={`ptr${ptrActive ? " ptr--active" : ""}`}
-          style={{ height: ptrRefreshing ? 44 : ptrPull }}
+          className={`ptr${ptrActive ? " ptr--active" : ""}${
+            ptrRefreshing ? " ptr--refreshing" : ""
+          }${ptrPull >= PTR_THRESHOLD && !ptrRefreshing ? " ptr--armed" : ""}`}
+          style={{ height: ptrRefreshing ? 48 : ptrPull }}
           aria-hidden={!ptrActive}
         >
-          <span className="ptr__label">
-            {ptrRefreshing
-              ? t("app.refreshing")
-              : ptrPull >= PTR_THRESHOLD
-                ? t("app.refresh")
-                : t("app.pullToRefresh")}
+          <span className="ptr__inner">
+            <span className="ptr__icon" aria-hidden="true">
+              <RefreshIcon size={18} />
+            </span>
+            <span className="ptr__label">
+              {ptrRefreshing
+                ? t("app.refreshing")
+                : ptrPull >= PTR_THRESHOLD
+                  ? t("app.refresh")
+                  : t("app.pullToRefresh")}
+            </span>
           </span>
         </div>
 

@@ -4,7 +4,7 @@
  * - navigate → network first，失敗回退已快取的 shell
  * - 靜態資源 → stale-while-revalidate
  */
-const CACHE = "qb-webapp-v1";
+const CACHE = "qb-webapp-v2";
 const PRECACHE = [
   "/",
   "/manifest.webmanifest",

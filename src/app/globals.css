@@ -305,6 +305,14 @@ html[data-standalone] .rss {
   animation: none;
 }
 
+/* 電腦版用滿視窗；手機（含橫向）維持 680px 欄寬 */
+@media (min-width: 1024px) {
+  .shell,
+  .shell--app {
+    max-width: none;
+  }
+}
+
 .nav-compact {
   position: fixed;
   top: 0;

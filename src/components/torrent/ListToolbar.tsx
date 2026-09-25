@@ -113,27 +113,59 @@ export function ListToolbar({
   return (
     <>
       <div className="toolbar toolbar--quiet">
-        <div className="filter-chips" role="tablist" aria-label={t("filter.label")}>
-          {STATUS_FILTERS.map((filter) => {
-            const active = statusFilter === filter;
-            return (
-              <button
-                key={filter}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                className={`filter-chip${active ? " filter-chip--active" : ""}`}
-                disabled={busy}
-                onClick={() => onStatusFilterChange(filter)}
-              >
-                {t(filterLabelKey(filter))}
-              </button>
-            );
-          })}
+        <button
+          type="button"
+          className="filter-chip filter-chip--active"
+          disabled={busy}
+          aria-label={`${t("filter.label")} ${t(filterLabelKey(statusFilter))}`}
+          onClick={() => {
+            const index = STATUS_FILTERS.indexOf(statusFilter);
+            const next =
+              STATUS_FILTERS[(index + 1) % STATUS_FILTERS.length] ?? "all";
+            onStatusFilterChange(next);
+          }}
+        >
+          {t(filterLabelKey(statusFilter))}
+        </button>
+        <div className="toolbar__options">
+          <label className="toolbar__sort" htmlFor="sort-key-inline">
+            <span className="toolbar__sort-label">{t("sort.label")}</span>
+            <select
+              id="sort-key-inline"
+              className="select select--inline toolbar__sort-select"
+              value={sortKey}
+              disabled={busy}
+              onChange={(e) => onSortKeyChange(e.target.value as SortKey)}
+            >
+              {SORT_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {t(sortLabelKey(key))}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="btn btn--sm toolbar__option"
+            disabled={busy}
+            onClick={onToggleSortDir}
+          >
+            {sortDir === "desc" ? <SortDescIcon /> : <SortAscIcon />}
+            <span>{sortDir === "desc" ? t("sort.desc") : t("sort.asc")}</span>
+          </button>
+          <button
+            type="button"
+            className="btn btn--sm toolbar__option"
+            disabled={busy}
+            onClick={onToggleSelectionMode}
+          >
+            {selectionMode ? <BatchDoneIcon /> : <BatchOpenIcon />}
+            <span>{selectionMode ? t("batch.done") : t("batch.open")}</span>
+          </button>
         </div>
         <button
           type="button"
-          className="btn btn--icon btn--sm"
+          className="btn btn--icon btn--sm toolbar__more"
           disabled={busy}
           aria-label={t("list.options")}
           title={t("list.options")}

@@ -49,7 +49,7 @@ export function TabBar({ tab, moreOpen, onTabChange, onMore }: Props) {
       </button>
       <button
         type="button"
-        className={`app-tab-bar__item${moreOpen ? " is-active" : ""}`}
+        className={`app-tab-bar__item app-tab-bar__item--more${moreOpen ? " is-active" : ""}`}
         onClick={onMore}
         aria-label={t("app.tab.more")}
         aria-expanded={moreOpen}

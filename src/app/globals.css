@@ -305,6 +305,16 @@ html[data-standalone] .rss {
   animation: none;
 }
 
+.header-tools {
+  position: fixed;
+  z-index: 45;
+  top: calc(max(var(--spacing-md), var(--safe-top)) + 8px);
+  right: max(var(--spacing-md), env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 /* 電腦版用滿視窗；手機（含橫向）維持 680px 欄寬 */
 @media (min-width: 1024px) {
   .shell,
@@ -326,8 +336,9 @@ html[data-standalone] .rss {
   min-height: calc(var(--app-header-compact-height) + var(--safe-top));
   padding:
     calc(var(--space-sm) + var(--safe-top))
-    var(--space-md)
-    var(--space-sm);
+    96px
+    var(--space-sm)
+    var(--space-md);
   background: var(--card-bg);
   backdrop-filter: var(--card-blur) saturate(1.4);
   -webkit-backdrop-filter: var(--card-blur) saturate(1.4);
@@ -348,6 +359,9 @@ html[data-standalone] .rss {
 }
 
 .nav-compact__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font: var(--text-caption);
   font-size: 17px;
   font-weight: 600;
@@ -662,6 +676,10 @@ html[data-standalone] .app-tab-bar__label {
     transform 0.15s var(--ease-spring);
 }
 
+.app-tab-bar__item--more {
+  display: none;
+}
+
 .app-tab-bar__item:active {
   transform: scale(0.92);
 }
@@ -823,6 +841,7 @@ html[data-standalone] .app-tab-bar__label {
   justify-content: space-between;
   gap: var(--space-md);
   padding-top: var(--space-xs);
+  padding-right: 92px;
 }
 
 .header__actions {
@@ -835,11 +854,26 @@ html[data-standalone] .app-tab-bar__label {
 }
 
 .title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin: 0;
   font: var(--text-hero);
   font-size: clamp(32px, 8vw, 48px);
   letter-spacing: -0.03em;
   color: var(--text);
+}
+
+.title__icon {
+  width: 0.85em;
+  height: 0.85em;
+  flex-shrink: 0;
+  border-radius: 22%;
+}
+
+.title__icon--compact {
+  width: 22px;
+  height: 22px;
 }
 
 .hint {
@@ -927,6 +961,7 @@ html[data-standalone] .app-tab-bar__label {
 
 .toolbar--quiet {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-sm);
   padding: 0;
@@ -950,19 +985,42 @@ html[data-standalone] .app-tab-bar__label {
   gap: var(--space-sm);
 }
 
-.filter-chips {
+.toolbar__options {
   display: flex;
-  flex: 1;
-  gap: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 2px 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  flex-shrink: 1;
+  margin-left: auto;
+  max-width: 100%;
 }
 
-.filter-chips::-webkit-scrollbar {
-  display: none;
+.toolbar__sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+
+.toolbar__sort-label {
+  font: var(--text-caption);
+  color: var(--hint);
+  white-space: nowrap;
+}
+
+.toolbar__sort .toolbar__sort-select {
+  flex: 0 1 auto;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.toolbar__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 
 .filter-chip {
   appearance: none;
@@ -1353,6 +1411,10 @@ html[data-standalone] .app-tab-bar__label {
   min-height: 36px;
 }
 
+.toolbar__more {
+  display: none;
+}
+
 .btn--icon .icon {
   display: block;
   flex-shrink: 0;
@@ -1390,6 +1452,10 @@ html[data-standalone] .app-tab-bar__label {
   z-index: 80;
   translate: -50% 0;
   animation: fadeUp 0.2s var(--ease) both;
+}
+
+.lang-menu__list--portal.lang-menu__list--end {
+  translate: -100% 0;
 }
 
 .lang-menu__list--up {

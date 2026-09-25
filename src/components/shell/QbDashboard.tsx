@@ -69,6 +69,18 @@ function torrentsNeedFastPoll(items: Torrent[]): boolean {
   );
 }
 
+function AppMark({ compact = false }: { compact?: boolean }) {
+  return (
+    <img
+      src="/icon.svg"
+      alt=""
+      width={compact ? 22 : 40}
+      height={compact ? 22 : 40}
+      className={compact ? "title__icon title__icon--compact" : "title__icon"}
+    />
+  );
+}
+
 export function QbDashboard() {
   const { t, locale } = useI18n();
   const [torrents, setTorrents] = useState<Torrent[]>([]);
@@ -388,14 +400,30 @@ export function QbDashboard() {
     setPtrPull(0);
   }
 
+  const headerTools = (
+    <div className="header-tools">
+      <ThemeToggle className="btn btn--icon btn--sm" />
+      <LanguageToggle
+        className="btn btn--icon btn--sm btn--lang"
+        placement="end"
+      />
+    </div>
+  );
+
   if (booting) {
     return (
-      <main className="shell shell--app">
-        <header className="header">
-          <h1 className="title">qBittorrent</h1>
-        </header>
-        <LoadingState />
-      </main>
+      <>
+        {headerTools}
+        <main className="shell shell--app">
+          <header className="header">
+            <h1 className="title">
+              <AppMark />
+              qBittorrent
+            </h1>
+          </header>
+          <LoadingState />
+        </main>
+      </>
     );
   }
 
@@ -405,6 +433,7 @@ export function QbDashboard() {
 
   return (
     <>
+      {headerTools}
       <main
         className="shell shell--app"
         onPointerDown={onPtrDown}
@@ -416,7 +445,10 @@ export function QbDashboard() {
           className={`nav-compact${compact ? " nav-compact--visible" : ""}`}
           aria-hidden={!compact}
         >
-          <span className="nav-compact__title">qBittorrent</span>
+          <span className="nav-compact__title">
+            <AppMark compact />
+            qBittorrent
+          </span>
         </div>
 
         <InstallBanner />
@@ -452,7 +484,10 @@ export function QbDashboard() {
         <header
           className={`header header--large${compact ? " header--faded" : ""}`}
         >
-          <h1 className="title">qBittorrent</h1>
+          <h1 className="title">
+            <AppMark />
+            qBittorrent
+          </h1>
         </header>
 
         {listError && !showOfflineEmpty ? (

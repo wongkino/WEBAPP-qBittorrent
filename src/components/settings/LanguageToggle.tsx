@@ -12,8 +12,8 @@ import {
 
 type Props = {
   className?: string;
-  /** Menu opens relative to the trigger. Default: down. */
-  placement?: "up" | "down" | "right";
+  /** Menu opens relative to the trigger. Default: down. `end` aligns the menu to the trigger's right edge. */
+  placement?: "up" | "down" | "right" | "end";
 };
 
 type MenuPos = {
@@ -44,6 +44,13 @@ export function LanguageToggle({ className, placement = "down" }: Props) {
     function update() {
       const rect = buttonRef.current?.getBoundingClientRect();
       if (!rect) return;
+      if (placement === "end") {
+        setPos({
+          left: rect.right,
+          top: rect.bottom + 6,
+        });
+        return;
+      }
       if (placement === "right") {
         setPos({
           left: rect.right + 6,
@@ -112,7 +119,9 @@ export function LanguageToggle({ className, placement = "down" }: Props) {
   const listClass =
     placement === "right"
       ? "lang-menu__list lang-menu__list--portal lang-menu__list--right"
-      : placement === "up"
+      : placement === "end"
+        ? "lang-menu__list lang-menu__list--portal lang-menu__list--end"
+        : placement === "up"
         ? "lang-menu__list lang-menu__list--portal lang-menu__list--up"
         : "lang-menu__list lang-menu__list--portal";
 

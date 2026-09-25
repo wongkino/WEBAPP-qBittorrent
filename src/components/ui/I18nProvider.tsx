@@ -31,14 +31,14 @@ type Props = {
 };
 
 export function I18nProvider({ children }: Props) {
-  // Always start with DEFAULT_LOCALE so SSR and hydration match; sync
-  // from localStorage after mount.
+  // Always start with DEFAULT_LOCALE so SSR and hydration match; then
+  // use a saved choice, or the browser language when none was chosen.
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
   useEffect(() => {
     const initial = resolveInitialLocale();
     setLocaleState(initial);
-    persistLocale(initial);
+    document.documentElement.lang = initial;
   }, []);
 
   const setLocale = useCallback((next: Locale) => {

@@ -592,6 +592,7 @@ export const DEFAULT_LOCALE: Locale = "zh-Hant";
 export const LOCALES: Locale[] = ["en", "zh-Hant", "zh-Hans", "ja"];
 
 export const LOCALE_STORAGE_KEY = "tg-dl-locale";
+const LOCALE_CHOSEN_KEY = "tg-dl-locale-chosen";
 
 export const LOCALE_SHORT_LABEL: Record<Locale, string> = {
   en: "EN",
@@ -613,6 +614,7 @@ export function isLocale(value: string | null | undefined): value is Locale {
 
 export function readStoredLocale(): Locale | null {
   try {
+    if (localStorage.getItem(LOCALE_CHOSEN_KEY) !== "1") return null;
     const value = localStorage.getItem(LOCALE_STORAGE_KEY);
     return isLocale(value) ? value : null;
   } catch {
@@ -620,13 +622,42 @@ export function readStoredLocale(): Locale | null {
   }
 }
 
+function matchBrowserTag(tag: string): Locale | null {
+  const value = tag.toLowerCase();
+  if (value.startsWith("ja")) return "ja";
+  if (
+    value === "zh-cn" ||
+    value === "zh-sg" ||
+    value.startsWith("zh-hans")
+  ) {
+    return "zh-Hans";
+  }
+  if (value.startsWith("zh")) return "zh-Hant";
+  if (value.startsWith("en")) return "en";
+  return null;
+}
+
+export function localeFromBrowser(): Locale {
+  if (typeof navigator === "undefined") return DEFAULT_LOCALE;
+  const tags =
+    navigator.languages && navigator.languages.length > 0
+      ? navigator.languages
+      : [navigator.language];
+  for (const tag of tags) {
+    const match = matchBrowserTag(tag);
+    if (match) return match;
+  }
+  return DEFAULT_LOCALE;
+}
+
 export function resolveInitialLocale(): Locale {
-  return readStoredLocale() ?? DEFAULT_LOCALE;
+  return readStoredLocale() ?? localeFromBrowser();
 }
 
 export function persistLocale(locale: Locale) {
   try {
     localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+    localStorage.setItem(LOCALE_CHOSEN_KEY, "1");
   } catch {
     /* ignore */
   }

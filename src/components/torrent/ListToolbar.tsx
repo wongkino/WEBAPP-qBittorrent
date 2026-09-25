@@ -115,7 +115,7 @@ export function ListToolbar({
       <div className="toolbar toolbar--quiet">
         <button
           type="button"
-          className="filter-chip filter-chip--active"
+          className="filter-chip filter-chip--active filter-chip--cycle"
           disabled={busy}
           aria-label={`${t("filter.label")} ${t(filterLabelKey(statusFilter))}`}
           onClick={() => {
@@ -127,6 +127,24 @@ export function ListToolbar({
         >
           {t(filterLabelKey(statusFilter))}
         </button>
+        <div className="filter-chips" role="tablist" aria-label={t("filter.label")}>
+          {STATUS_FILTERS.map((filter) => {
+            const active = statusFilter === filter;
+            return (
+              <button
+                key={filter}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={`filter-chip${active ? " filter-chip--active" : ""}`}
+                disabled={busy}
+                onClick={() => onStatusFilterChange(filter)}
+              >
+                {t(filterLabelKey(filter))}
+              </button>
+            );
+          })}
+        </div>
         <div className="toolbar__options">
           <label className="toolbar__sort" htmlFor="sort-key-inline">
             <span className="toolbar__sort-label">{t("sort.label")}</span>

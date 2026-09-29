@@ -619,13 +619,30 @@ html[data-standalone] .rss {
     var(--shadow);
   display: grid;
   place-items: center;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   animation: fabIn 0.4s var(--ease-spring) both;
   transition:
     transform var(--duration) var(--ease-spring),
     filter var(--duration) var(--ease),
     box-shadow var(--duration) var(--ease);
   -webkit-tap-highlight-color: transparent;
+}
+
+.fab--placed {
+  right: auto;
+  bottom: auto;
+}
+
+.fab--dragging,
+.fab--dragging:active {
+  cursor: grabbing;
+  animation: none;
+  transition: none;
+  transform: scale(1.06);
 }
 
 .fab:active {
@@ -1063,14 +1080,6 @@ html[data-standalone] .app-tab-bar__label {
 .toolbar__sort-item--active {
   background: color-mix(in srgb, var(--accent) 16%, transparent);
   color: var(--accent);
-}
-
-.toolbar__sort-label {
-  font: var(--text-caption);
-  font-size: clamp(11px, 2.8vw, 13px);
-  color: var(--hint);
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .toolbar__sort .select.toolbar__sort-select {

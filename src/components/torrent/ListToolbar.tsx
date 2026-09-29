@@ -181,7 +181,6 @@ export function ListToolbar({
         </button>
         <div className="toolbar__options">
           <div className="toolbar__sort" ref={sortRef}>
-            <span className="toolbar__sort-label">{t("sort.label")}</span>
             <button
               type="button"
               className="btn btn--sm toolbar__sort-trigger"

@@ -8,6 +8,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { AddTorrentFab } from "@/components/shell/AddTorrentFab";
 import { AddTorrentForm } from "@/components/torrent/AddTorrentForm";
 import { useI18n } from "@/components/ui/I18nProvider";
 import { InstallBanner } from "@/components/settings/InstallBanner";
@@ -15,7 +16,7 @@ import { LanguageToggle } from "@/components/settings/LanguageToggle";
 import { ListToolbar } from "@/components/torrent/ListToolbar";
 import { LoadingState } from "@/components/state/LoadingState";
 import { OfflineState } from "@/components/state/OfflineState";
-import { AddIcon, RefreshIcon } from "@/components/ui/icons";
+import { RefreshIcon } from "@/components/ui/icons";
 import { RssPanel } from "@/components/rss/RssPanel";
 import { Sheet } from "@/components/ui/Sheet";
 import { TabBar, type AppTab } from "@/components/shell/TabBar";
@@ -598,15 +599,7 @@ export function QbDashboard() {
       </main>
 
       {tab === "downloads" && online ? (
-        <button
-          type="button"
-          className="fab"
-          aria-label={t("add.fab")}
-          title={t("add.fab")}
-          onClick={() => setAddOpen(true)}
-        >
-          <AddIcon size={24} />
-        </button>
+        <AddTorrentFab onOpen={() => setAddOpen(true)} />
       ) : null}
 
       <TabBar tab={tab} onTabChange={(next) => changeTab(next)} />

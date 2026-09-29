@@ -96,7 +96,6 @@ export function QbDashboard() {
   const [tab, setTab] = useState<AppTab>("downloads");
   const [compact, setCompact] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
   const [ptrPull, setPtrPull] = useState(0);
   const [ptrRefreshing, setPtrRefreshing] = useState(false);
   const [online, setOnline] = useState(true);
@@ -176,6 +175,14 @@ export function QbDashboard() {
       window.removeEventListener("offline", sync);
     };
   }, []);
+
+  const completedHashes = useMemo(
+    () =>
+      torrents
+        .filter((torrent) => torrent.progress >= 1)
+        .map((torrent) => torrent.hash),
+    [torrents]
+  );
 
   const visibleTorrents = useMemo(
     () =>
@@ -259,7 +266,6 @@ export function QbDashboard() {
   function changeTab(next: AppTab, dir?: "left" | "right") {
     setTab((prev) => (prev === next ? prev : next));
     setTabDir(dir ?? (next === "rss" ? "left" : "right"));
-    setMoreOpen(false);
     window.scrollTo({ top: 0 });
     setCompact(false);
   }
@@ -279,7 +285,7 @@ export function QbDashboard() {
   }, [refreshAll]);
 
   useEffect(() => {
-    if (booting || tab !== "downloads" || addOpen || moreOpen) return;
+    if (booting || tab !== "downloads" || addOpen) return;
 
     let id: number | null = null;
 
@@ -329,7 +335,7 @@ export function QbDashboard() {
       stop();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [addOpen, booting, handleError, moreOpen, refreshTorrents, tab]);
+  }, [addOpen, booting, handleError, refreshTorrents, tab]);
 
   async function withBusy(hash: string, action: () => Promise<void>) {
     setBusyHash(hash);
@@ -373,7 +379,7 @@ export function QbDashboard() {
   async function onPtrUp(event: ReactPointerEvent<HTMLElement>) {
     const start = swipeStart.current;
     swipeStart.current = null;
-    if (start && !moreOpen && !addOpen) {
+    if (start && !addOpen) {
       const dx = event.clientX - start.x;
       const dy = event.clientY - start.y;
       if (Math.abs(dx) >= TAB_SWIPE_PX && Math.abs(dx) >= Math.abs(dy) * 1.4) {
@@ -515,10 +521,14 @@ export function QbDashboard() {
                   selectedCount={selected.size}
                   totalCount={visibleTorrents.length}
                   busy={busyHash !== null}
-                  onSortKeyChange={setSortKey}
-                  onToggleSortDir={() =>
-                    setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))
-                  }
+                  onSortPick={(key) => {
+                    if (key === sortKey) {
+                      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+                      return;
+                    }
+                    setSortKey(key);
+                    setSortDir("asc");
+                  }}
                   onStatusFilterChange={setStatusFilter}
                   onToggleSelectionMode={() => {
                     setSelectionMode((prev) => !prev);
@@ -542,6 +552,17 @@ export function QbDashboard() {
                     void withBusy("*", async () => {
                       await deleteTorrent(selectedHashes, deleteFiles);
                       setSelected(new Set());
+                    })
+                  }
+                  completedCount={completedHashes.length}
+                  onRemoveCompleted={() =>
+                    void withBusy("*", async () => {
+                      await deleteTorrent(completedHashes, false);
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        for (const hash of completedHashes) next.delete(hash);
+                        return next;
+                      });
                     })
                   }
                 />
@@ -588,12 +609,7 @@ export function QbDashboard() {
         </button>
       ) : null}
 
-      <TabBar
-        tab={tab}
-        moreOpen={moreOpen}
-        onTabChange={(next) => changeTab(next)}
-        onMore={() => setMoreOpen(true)}
-      />
+      <TabBar tab={tab} onTabChange={(next) => changeTab(next)} />
 
       {addOpen ? (
         <Sheet title={t("add.title")} onClose={() => setAddOpen(false)}>
@@ -608,17 +624,6 @@ export function QbDashboard() {
         </Sheet>
       ) : null}
 
-      {moreOpen ? (
-        <Sheet title={t("more.title")} onClose={() => setMoreOpen(false)}>
-          <div className="settings-group">
-            <p className="settings-group__header">{t("more.appearance")}</p>
-            <div className="settings-group__card more-sheet__row">
-              <ThemeToggle />
-              <LanguageToggle placement="right" />
-            </div>
-          </div>
-        </Sheet>
-      ) : null}
     </>
   );
 }

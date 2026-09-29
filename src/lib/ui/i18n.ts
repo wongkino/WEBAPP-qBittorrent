@@ -50,6 +50,8 @@ const zhHant = {
   "filter.downloading": "下載中",
   "filter.paused": "暫停",
   "filter.completed": "完成",
+  "completed.remove": "移除已完成",
+  "completed.confirmRemove": "移除 {count} 個已完成的種子（保留檔案）？",
 
   "batch.open": "批次",
   "batch.done": "完成選取",
@@ -193,6 +195,8 @@ const zhHans: Record<MessageKey, string> = {
   "filter.downloading": "下载中",
   "filter.paused": "暂停",
   "filter.completed": "完成",
+  "completed.remove": "移除已完成",
+  "completed.confirmRemove": "移除 {count} 个已完成的种子（保留文件）？",
 
   "batch.open": "批量",
   "batch.done": "完成选取",
@@ -336,6 +340,9 @@ const en: Record<MessageKey, string> = {
   "filter.downloading": "Downloading",
   "filter.paused": "Paused",
   "filter.completed": "Completed",
+  "completed.remove": "Remove completed",
+  "completed.confirmRemove":
+    "Remove {count} completed torrents (keep files)?",
 
   "batch.open": "Batch",
   "batch.done": "Done",
@@ -482,6 +489,9 @@ const ja: Record<MessageKey, string> = {
   "filter.downloading": "ダウンロード中",
   "filter.paused": "一時停止",
   "filter.completed": "完了",
+  "completed.remove": "完了を削除",
+  "completed.confirmRemove":
+    "完了した {count} 件のトレントを削除しますか（ファイルは残す）？",
 
   "batch.open": "一括",
   "batch.done": "選択完了",

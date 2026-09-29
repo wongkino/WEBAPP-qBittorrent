@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { SortDir, SortKey } from "@/lib/core/types";
-import { Sheet } from "@/components/ui/Sheet";
 import { useI18n } from "@/components/ui/I18nProvider";
 import {
   BatchDoneIcon,
   BatchOpenIcon,
   ClearIcon,
   DeleteFilesIcon,
-  EllipsisIcon,
   PauseIcon,
   RemoveIcon,
   ResumeIcon,
@@ -49,8 +47,7 @@ type Props = {
   selectedCount: number;
   totalCount: number;
   busy: boolean;
-  onSortKeyChange: (key: SortKey) => void;
-  onToggleSortDir: () => void;
+  onSortPick: (key: SortKey) => void;
   onStatusFilterChange: (filter: StatusFilter) => void;
   onToggleSelectionMode: () => void;
   onSelectAll: () => void;
@@ -58,6 +55,8 @@ type Props = {
   onBatchPause: () => void;
   onBatchResume: () => void;
   onBatchDelete: (deleteFiles: boolean) => void;
+  completedCount: number;
+  onRemoveCompleted: () => void;
 };
 
 export function ListToolbar({
@@ -68,8 +67,7 @@ export function ListToolbar({
   selectedCount,
   totalCount,
   busy,
-  onSortKeyChange,
-  onToggleSortDir,
+  onSortPick,
   onStatusFilterChange,
   onToggleSelectionMode,
   onSelectAll,
@@ -77,9 +75,28 @@ export function ListToolbar({
   onBatchPause,
   onBatchResume,
   onBatchDelete,
+  completedCount,
+  onRemoveCompleted,
 }: Props) {
   const { t } = useI18n();
-  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sortOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (!sortRef.current?.contains(event.target as Node)) setSortOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setSortOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [sortOpen]);
 
   function IconAction({
     label,
@@ -145,32 +162,73 @@ export function ListToolbar({
             );
           })}
         </div>
+        <button
+          type="button"
+          className="btn btn--sm toolbar__clear-completed"
+          disabled={busy || completedCount === 0}
+          onClick={() => {
+            if (
+              confirm(
+                t("completed.confirmRemove", { count: completedCount })
+              )
+            ) {
+              onRemoveCompleted();
+            }
+          }}
+        >
+          <RemoveIcon />
+          <span>{t("completed.remove")}</span>
+        </button>
         <div className="toolbar__options">
-          <label className="toolbar__sort" htmlFor="sort-key-inline">
+          <div className="toolbar__sort" ref={sortRef}>
             <span className="toolbar__sort-label">{t("sort.label")}</span>
-            <select
-              id="sort-key-inline"
-              className="select select--inline toolbar__sort-select"
-              value={sortKey}
+            <button
+              type="button"
+              className="btn btn--sm toolbar__sort-trigger"
               disabled={busy}
-              onChange={(e) => onSortKeyChange(e.target.value as SortKey)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+              aria-label={`${t("sort.label")} ${t(sortLabelKey(sortKey))} ${
+                sortDir === "desc" ? t("sort.desc") : t("sort.asc")
+              }`}
+              onClick={() => setSortOpen((prev) => !prev)}
             >
-              {SORT_KEYS.map((key) => (
-                <option key={key} value={key}>
-                  {t(sortLabelKey(key))}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="button"
-            className="btn btn--sm toolbar__option"
-            disabled={busy}
-            onClick={onToggleSortDir}
-          >
-            {sortDir === "desc" ? <SortDescIcon /> : <SortAscIcon />}
-            <span>{sortDir === "desc" ? t("sort.desc") : t("sort.asc")}</span>
-          </button>
+              <span>{t(sortLabelKey(sortKey))}</span>
+              {sortDir === "desc" ? <SortDescIcon /> : <SortAscIcon />}
+            </button>
+            {sortOpen ? (
+              <ul className="toolbar__sort-menu" role="listbox">
+                {SORT_KEYS.map((key) => {
+                  const active = key === sortKey;
+                  return (
+                    <li key={key} role="presentation">
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={active}
+                        className={`toolbar__sort-item${
+                          active ? " toolbar__sort-item--active" : ""
+                        }`}
+                        onClick={() => {
+                          onSortPick(key);
+                          if (key !== sortKey) setSortOpen(false);
+                        }}
+                      >
+                        <span>{t(sortLabelKey(key))}</span>
+                        {active ? (
+                          sortDir === "desc" ? (
+                            <SortDescIcon />
+                          ) : (
+                            <SortAscIcon />
+                          )
+                        ) : null}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+          </div>
           <button
             type="button"
             className="btn btn--sm toolbar__option"
@@ -181,16 +239,6 @@ export function ListToolbar({
             <span>{selectionMode ? t("batch.done") : t("batch.open")}</span>
           </button>
         </div>
-        <button
-          type="button"
-          className="btn btn--icon btn--sm toolbar__more"
-          disabled={busy}
-          aria-label={t("list.options")}
-          title={t("list.options")}
-          onClick={() => setOptionsOpen(true)}
-        >
-          <EllipsisIcon size={16} />
-        </button>
       </div>
 
       {selectionMode ? (
@@ -268,61 +316,6 @@ export function ListToolbar({
             </IconAction>
           </div>
         </div>
-      ) : null}
-
-      {optionsOpen ? (
-        <Sheet title={t("list.options")} onClose={() => setOptionsOpen(false)}>
-          <div className="settings-group">
-            <p className="settings-group__header">{t("list.sortSection")}</p>
-            <div className="settings-group__card">
-              <label className="settings-row" htmlFor="sort-key-sheet">
-                <span>{t("sort.label")}</span>
-                <select
-                  id="sort-key-sheet"
-                  className="select select--inline"
-                  value={sortKey}
-                  disabled={busy}
-                  onChange={(e) => onSortKeyChange(e.target.value as SortKey)}
-                >
-                  {SORT_KEYS.map((key) => (
-                    <option key={key} value={key}>
-                      {t(sortLabelKey(key))}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button
-                type="button"
-                className="settings-row settings-row--button"
-                disabled={busy}
-                onClick={onToggleSortDir}
-              >
-                <span>
-                  {sortDir === "desc" ? t("sort.desc") : t("sort.asc")}
-                </span>
-                {sortDir === "desc" ? <SortDescIcon /> : <SortAscIcon />}
-              </button>
-            </div>
-
-            <p className="settings-group__header">{t("list.batchSection")}</p>
-            <div className="settings-group__card">
-              <button
-                type="button"
-                className="settings-row settings-row--button"
-                disabled={busy}
-                onClick={() => {
-                  onToggleSelectionMode();
-                  setOptionsOpen(false);
-                }}
-              >
-                <span>
-                  {selectionMode ? t("batch.done") : t("batch.open")}
-                </span>
-                {selectionMode ? <BatchDoneIcon /> : <BatchOpenIcon />}
-              </button>
-            </div>
-          </div>
-        </Sheet>
       ) : null}
     </>
   );

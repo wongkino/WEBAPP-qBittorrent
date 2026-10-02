@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     const response = NextResponse.redirect(appHome(config));
     response.cookies.set(
       SESSION_COOKIE,
-      await createSessionToken(config, user),
+      await createSessionToken(config.authSecret, user),
       sessionCookieOptions(secure)
     );
     clearOidcCookie(response, secure);

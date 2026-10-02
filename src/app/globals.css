@@ -896,6 +896,22 @@ html[data-standalone] .app-tab-bar__label {
   color: var(--danger);
 }
 
+.login__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font: var(--text-caption);
+  color: var(--hint);
+}
+
 .login__action {
   width: 100%;
   display: inline-flex;

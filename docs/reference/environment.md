@@ -17,7 +17,7 @@
 
 ## Pocket ID（OIDC）
 
-主頁登入用 OIDC。未設定時只顯示設定提示，`/api/qb/*` 回 401。
+主頁登入用 OIDC。沒填 OIDC 時，改用 `QBITTORRENT_USERNAME`／`QBITTORRENT_PASSWORD` 在主頁登入。兩者都沒有時只顯示設定提示，`/api/qb/*` 回 401。
 
 | 變數 | 說明 |
 |------|------|

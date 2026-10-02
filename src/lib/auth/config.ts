@@ -48,8 +48,35 @@ export function readOidcConfig(): OidcConfig | null {
   };
 }
 
+export type AuthMode = "oidc" | "password" | "setup";
+
+/** OIDC 優先。沒填 OIDC 時，改用 qBittorrent 帳號密碼登入。 */
+export function readAuthMode(): AuthMode {
+  if (readOidcConfig()) return "oidc";
+  if (env("QBITTORRENT_USERNAME") && env("QBITTORRENT_PASSWORD")) return "password";
+  return "setup";
+}
+
+/** 簽署 session。OIDC 用 AUTH_SECRET；只有帳密登入時，沒有 AUTH_SECRET 也能簽。 */
+export function readSessionSecret(): string | null {
+  const oidc = readOidcConfig();
+  if (oidc) return oidc.authSecret;
+  const explicit = env("AUTH_SECRET");
+  if (explicit) return explicit;
+  const username = env("QBITTORRENT_USERNAME");
+  const password = env("QBITTORRENT_PASSWORD");
+  if (username && password) return `qb:${username}:${password}`;
+  return null;
+}
+
 export function cookieSecure(config: OidcConfig): boolean {
   return new URL(config.redirectUri).protocol === "https:";
+}
+
+export function requestIsSecure(request: Request): boolean {
+  const forwarded = request.headers.get("x-forwarded-proto");
+  if (forwarded) return forwarded.split(",")[0]?.trim() === "https:";
+  return new URL(request.url).protocol === "https:";
 }
 
 /** 登入完成後回到公開網址的首頁，不使用反向代理後面的內部位址。 */

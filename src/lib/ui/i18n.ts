@@ -154,6 +154,11 @@ const zhHant = {
   "auth.errorFailed": "登入失敗，請再試一次",
   "auth.errorForbidden": "這個帳號沒有使用權限",
   "auth.errorUnconfigured": "登入尚未設定完成",
+  "auth.passwordHint": "使用 qBittorrent 帳號密碼登入。",
+  "auth.username": "帳號",
+  "auth.password": "密碼",
+  "auth.passwordSubmit": "登入",
+  "auth.passwordFailed": "帳號或密碼不正確",
 } as const;
 
 const zhHans: Record<MessageKey, string> = {
@@ -308,6 +313,11 @@ const zhHans: Record<MessageKey, string> = {
   "auth.errorFailed": "登录失败，请再试一次",
   "auth.errorForbidden": "这个账号没有使用权限",
   "auth.errorUnconfigured": "登录尚未设置完成",
+  "auth.passwordHint": "使用 qBittorrent 账号密码登录。",
+  "auth.username": "账号",
+  "auth.password": "密码",
+  "auth.passwordSubmit": "登录",
+  "auth.passwordFailed": "账号或密码不正确",
 };
 
 const en: Record<MessageKey, string> = {
@@ -466,6 +476,11 @@ const en: Record<MessageKey, string> = {
   "auth.errorFailed": "Sign-in failed. Try again.",
   "auth.errorForbidden": "This account is not allowed",
   "auth.errorUnconfigured": "Sign-in is not configured yet",
+  "auth.passwordHint": "Sign in with the qBittorrent username and password.",
+  "auth.username": "Username",
+  "auth.password": "Password",
+  "auth.passwordSubmit": "Sign in",
+  "auth.passwordFailed": "Incorrect username or password",
 };
 
 const ja: Record<MessageKey, string> = {
@@ -624,6 +639,11 @@ const ja: Record<MessageKey, string> = {
   "auth.errorFailed": "ログインに失敗しました。もう一度お試しください",
   "auth.errorForbidden": "このアカウントには権限がありません",
   "auth.errorUnconfigured": "ログインがまだ設定されていません",
+  "auth.passwordHint": "qBittorrent のユーザー名とパスワードでログインします。",
+  "auth.username": "ユーザー名",
+  "auth.password": "パスワード",
+  "auth.passwordSubmit": "ログイン",
+  "auth.passwordFailed": "ユーザー名またはパスワードが違います",
 };
 
 export const messages: Record<Locale, Record<MessageKey, string>> = {

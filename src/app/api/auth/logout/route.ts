@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookieSecure, readOidcConfig } from "@/lib/auth/config";
+import { requestIsSecure } from "@/lib/auth/config";
 import {
   OIDC_COOKIE,
   oidcCookieOptions,
@@ -9,9 +9,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
-  const config = readOidcConfig();
-  const secure = config ? cookieSecure(config) : false;
+export async function POST(request: Request) {
+  const secure = requestIsSecure(request);
   const response = NextResponse.json({ ok: true });
   response.cookies.set(SESSION_COOKIE, "", {
     ...sessionCookieOptions(secure),

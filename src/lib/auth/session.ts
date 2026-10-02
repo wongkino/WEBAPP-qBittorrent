@@ -1,5 +1,5 @@
 import { jwtVerify, SignJWT } from "jose";
-import { readOidcConfig, type OidcConfig } from "@/lib/auth/config";
+import { readSessionSecret, type OidcConfig } from "@/lib/auth/config";
 
 export const SESSION_COOKIE = "qb-session";
 export const OIDC_COOKIE = "qb-oidc";
@@ -37,8 +37,8 @@ export function oidcCookieOptions(secure: boolean) {
   return cookieOptions(secure, OIDC_MAX_AGE);
 }
 
-function secretKey(config: OidcConfig) {
-  return new TextEncoder().encode(config.authSecret);
+function secretKey(secret: string) {
+  return new TextEncoder().encode(secret);
 }
 
 function readCookie(request: Request, name: string): string | null {
@@ -59,7 +59,7 @@ function readCookie(request: Request, name: string): string | null {
 }
 
 export async function createSessionToken(
-  config: OidcConfig,
+  secret: string,
   user: SessionUser
 ): Promise<string> {
   return new SignJWT({ email: user.email, name: user.name })
@@ -69,16 +69,16 @@ export async function createSessionToken(
     .setSubject(user.sub)
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE}s`)
-    .sign(secretKey(config));
+    .sign(secretKey(secret));
 }
 
 export async function readSession(request: Request): Promise<SessionUser | null> {
-  const config = readOidcConfig();
-  if (!config) return null;
+  const secret = readSessionSecret();
+  if (!secret) return null;
   const token = readCookie(request, SESSION_COOKIE);
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secretKey(config), {
+    const { payload } = await jwtVerify(token, secretKey(secret), {
       issuer: "qb-webapp",
       audience: "qb-session",
     });
@@ -105,7 +105,7 @@ export async function createOidcTransaction(
     .setSubject(txn.state)
     .setIssuedAt()
     .setExpirationTime(`${OIDC_MAX_AGE}s`)
-    .sign(secretKey(config));
+    .sign(secretKey(config.authSecret));
 }
 
 export async function readOidcTransaction(
@@ -115,7 +115,7 @@ export async function readOidcTransaction(
   const token = readCookie(request, OIDC_COOKIE);
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secretKey(config), {
+    const { payload } = await jwtVerify(token, secretKey(config.authSecret), {
       issuer: "qb-webapp",
       audience: "qb-oidc",
     });

@@ -1,6 +1,6 @@
 # 架構總覽
 
-個人 qBittorrent **Web App**（PWA／iOS 主畫面），以 Docker 執行並代理 qBittorrent Web API。外部反向代理負責 HTTPS 與登入。
+個人 qBittorrent **Web App**（PWA／iOS 主畫面），以 Docker 執行並代理 qBittorrent Web API。瀏覽器用 Pocket ID（OIDC）登入；伺服器用 `QBITTORRENT_USERNAME`／`QBITTORRENT_PASSWORD` 的 Basic 認證連線。反向代理負責 HTTPS。
 
 檔案目錄見 [codebase.md](codebase.md)。API 對照見 [reference/api-routes.md](../reference/api-routes.md)。
 
@@ -20,7 +20,7 @@
 │  API（Next.js Route Handlers）                               │
 │  app/api/qb/*/route.ts · lib/api/route.ts                           │
 └────────────────────────────┬────────────────────────────────┘
-                             │ Session + CSRF
+                             │ Basic auth + CSRF
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  qBittorrent 代理                                            │
@@ -48,8 +48,9 @@ Deploy：Docker Compose → Next.js standalone container
 
 ## 存取控制
 
-- Web App 不處理登入或使用者 session；既有反向代理必須保護 `/` 與所有 `/api/qb/*`。
-- Compose 僅將容器 port 發佈到 `127.0.0.1:3000`，避免從區網直接存取。
+- 主頁未登入時顯示 Pocket ID 登入。Session 為 HttpOnly cookie（約 14 天）。
+- `/api/qb/*` 沒有有效 session 時回 401。qBittorrent 帳密只留在伺服器。
+- Compose 僅將容器 port 發佈到 `127.0.0.1:3000`。反向代理終止 HTTPS，不要把 3000 公開到區網。
 
 ---
 
@@ -64,9 +65,8 @@ Deploy：Docker Compose → Next.js standalone container
 
 ## qBittorrent 連線
 
+- 每個請求帶 `Authorization: Basic`，帳密來自 `QBITTORRENT_USERNAME`／`QBITTORRENT_PASSWORD`
 - `Origin`／`Referer` 須符合 CSRF（`lib/qb/qbittorrent.ts`）
-- Form login 不帶 Basic Auth；之後帶 SID
-- Session 快取約 55 分鐘
 - Pause/Resume：先 `stop`/`start`，再 fallback `pause`/`resume`
 
 ---

@@ -8,10 +8,10 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import { AddTorrentFab } from "@/components/shell/AddTorrentFab";
 import { AddTorrentForm } from "@/components/torrent/AddTorrentForm";
 import { useI18n } from "@/components/ui/I18nProvider";
-import { InstallBanner } from "@/components/settings/InstallBanner";
 import { LanguageToggle } from "@/components/settings/LanguageToggle";
 import { ListToolbar } from "@/components/torrent/ListToolbar";
 import { LoadingState } from "@/components/state/LoadingState";
@@ -409,6 +409,7 @@ export function QbDashboard() {
 
   const headerTools = (
     <div className="header-tools">
+      <LogoutButton />
       <ThemeToggle className="btn btn--icon btn--sm" />
       <LanguageToggle
         className="btn btn--icon btn--sm btn--lang"
@@ -457,8 +458,6 @@ export function QbDashboard() {
             qBittorrent
           </span>
         </div>
-
-        <InstallBanner />
 
         {!online && torrents.length > 0 ? (
           <p className="offline-banner" role="status">

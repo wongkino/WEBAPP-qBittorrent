@@ -10,12 +10,23 @@ async function parseError(res: Response): Promise<string> {
   }
 }
 
+let onUnauthorized: (() => void) | null = null;
+
+/** Called when `/api/qb/*` returns 401 so the shell can show the login screen. */
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  onUnauthorized = handler;
+}
+
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
     cache: "no-store",
   });
+  if (res.status === 401) {
+    onUnauthorized?.();
+    throw new Error(await parseError(res));
+  }
   if (!res.ok) {
     throw new Error(await parseError(res));
   }

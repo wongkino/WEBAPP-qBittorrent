@@ -31,6 +31,7 @@ qbittorrent-web-app/
 | 路徑 | 說明 |
 |------|------|
 | `page.tsx`、`layout.tsx`、`globals.css` | 頁面與樣式 |
+| `api/auth/*/route.ts` | Pocket ID 登入、callback、session、登出 |
 | `api/qb/(torrent)/*/route.ts` | 種子 API（7 個；`(torrent)` 僅分組，不影響 URL） |
 | `api/qb/rss/*/route.ts` | RSS API（5 個） |
 
@@ -40,6 +41,7 @@ qbittorrent-web-app/
 
 | 子目錄 | 內容 |
 |--------|------|
+| `auth/` | Pocket ID 登入畫面、登出 |
 | `shell/` | WebApp、QbDashboard、TabBar |
 | `torrent/` | 下載列表、表單、工具列、分類 |
 | `rss/` | RssPanel |
@@ -54,6 +56,7 @@ qbittorrent-web-app/
 
 | 子目錄 | 內容 |
 |--------|------|
+| `auth/` | OIDC（Pocket ID）、session cookie |
 | `api/` | `route.ts`（伺服器）、`client.ts`（前端）、`errors.ts` |
 | `qb/` | `qbittorrent.ts`（唯一 qB 入口） |
 | `ui/` | i18n、theme、format、pwa、safe-area |

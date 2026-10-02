@@ -1,14 +1,15 @@
 # 部署指南（Docker）
 
-此服務以 Docker Compose 部署，並由既有反向代理處理 HTTPS 與登入。架構見 [overview.md](../architecture/overview.md)，環境變數見 [environment.md](../reference/environment.md)。
+此服務以 Docker Compose 部署。反向代理處理 HTTPS；應用程式用 Pocket ID（OIDC）登入，再用 `QBITTORRENT_USERNAME`／`QBITTORRENT_PASSWORD` 連線 qBittorrent。架構見 [overview.md](../architecture/overview.md)，環境變數見 [environment.md](../reference/environment.md)。
 
 ## 前置
 
 - Docker Engine 與 Docker Compose plugin
 - 可從 Docker 宿主機連線的 qBittorrent Web UI
-- 已設定登入保護的既有反向代理
+- 終止 HTTPS 的反向代理
+- Pocket ID 上的 OIDC 用戶端（不要勾 Public Client，要勾 PKCE）
 
-反向代理必須保護 `/` 和所有 `/api/qb/*`。`deploy/compose.yaml` 只發佈 `127.0.0.1:3000`，不可改成公開網卡。
+`deploy/compose.yaml` 只發佈 `127.0.0.1:3000`，不可改成公開網卡。登入由應用程式的 OIDC session 負責。
 
 ## 上線
 
@@ -16,7 +17,7 @@
 git clone <repo-url> qbittorrent-web-app
 cd qbittorrent-web-app
 cp deploy/.env.example deploy/.env
-# 編輯 deploy/.env，填入區網 qB URL、帳號與密碼
+# 編輯 deploy/.env：qB URL／帳密，以及 Pocket ID 的 OIDC 與 AUTH_SECRET
 docker compose -f deploy/compose.yaml up -d --build
 ```
 
@@ -55,8 +56,8 @@ docker compose -f deploy/compose.yaml down
 
 - [ ] `curl http://127.0.0.1:3000` 能取得頁面
 - [ ] 非 localhost 無法連線到 port 3000
-- [ ] 未登入反向代理時，`/` 與 `/api/qb/snapshot` 均被拒絕
-- [ ] 登入後可列出種子、加入 magnet／URL 並操作 RSS
+- [ ] 未登入時首頁是 Pocket ID 登入，`/api/qb/snapshot` 回 401
+- [ ] 用 Pocket ID 登入後可列出種子、加入 magnet／URL 並操作 RSS
 
 ## 故障排除
 

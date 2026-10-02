@@ -176,6 +176,16 @@ export function ClearIcon(props: IconProps) {
   );
 }
 
+export function LogoutIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M10 7V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-2" />
+      <path d="M15 12H3" />
+      <path d="m6 9-3 3 3 3" />
+    </Icon>
+  );
+}
+
 export function AddIcon(props: IconProps) {
   return (
     <Icon {...props}>

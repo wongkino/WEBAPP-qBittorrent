@@ -1,18 +1,8 @@
 import { env } from "@/lib/core/env";
 import type { Torrent } from "@/lib/core/types";
 
-type Session = {
-  cookie: string | null;
-  basicAuth: string;
-  expiresAt: number;
-};
-
-const SESSION_TTL_MS = 55 * 60 * 1000;
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-
-let cachedSession: Session | null = null;
-let loginInflight: Promise<Session> | null = null;
 
 function getConfig() {
   const baseUrl = env("QBITTORRENT_URL")?.replace(/\/+$/, "");
@@ -40,144 +30,35 @@ function requestOrigin(baseUrl: string): string {
   return url.origin;
 }
 
-function qbHeaders(
-  baseUrl: string,
-  session: Pick<Session, "cookie" | "basicAuth">,
-  extra?: HeadersInit
-): Headers {
+function qbHeaders(baseUrl: string, extra?: HeadersInit): Headers {
+  const { username, password } = getConfig();
   const origin = requestOrigin(baseUrl);
   const headers = new Headers(extra);
   headers.set("Referer", `${origin}/`);
   headers.set("Origin", origin);
-  headers.set("Authorization", session.basicAuth);
+  headers.set("Authorization", basicAuthHeader(username, password));
   headers.set("User-Agent", USER_AGENT);
   headers.set("Accept", "text/plain, */*");
-  if (session.cookie) headers.set("Cookie", session.cookie);
   return headers;
 }
 
-function extractSidCookie(res: Response): string | null {
-  const headers = res.headers as Headers & {
-    getSetCookie?: () => string[];
-    getAll?: (name: string) => string[];
-  };
-
-  let list = headers.getSetCookie?.() ?? [];
-  if (!list.length && typeof headers.getAll === "function") {
-    try {
-      list = headers.getAll("Set-Cookie");
-    } catch {
-      list = [];
-    }
-  }
-  if (!list.length) {
-    const single = headers.get("set-cookie");
-    if (single) list = [single];
+async function qbFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const { baseUrl } = getConfig();
+  const headers = qbHeaders(baseUrl, init.headers);
+  if (init.body instanceof FormData) {
+    headers.delete("Content-Type");
   }
 
-  for (const header of list) {
-    const match = header.match(/(?:^|[,\s])SID=([^;,\s]+)/i);
-    const value = match?.[1]?.replace(/^"|"$/g, "");
-    if (value) return `SID=${value}`;
-  }
-  return null;
-}
-
-async function login(): Promise<Session> {
-  const { baseUrl, username, password } = getConfig();
-  const basicAuth = basicAuthHeader(username, password);
-  const origin = requestOrigin(baseUrl);
-
-  // Form login without Basic Auth — some proxies return empty 204 when
-  // Authorization is already present and never emit a SID cookie.
-  let res: Response;
   try {
-    res = await fetch(`${baseUrl}/api/v2/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Referer: `${origin}/`,
-        Origin: origin,
-        Accept: "text/plain, */*",
-        "User-Agent": USER_AGENT,
-      },
-      body: new URLSearchParams({ username, password }),
+    return await fetch(`${baseUrl}${path}`, {
+      ...init,
+      headers,
       cache: "no-store",
-      redirect: "manual",
     });
   } catch (err) {
     const detail = err instanceof Error ? err.message : "network error";
     throw new QBitError(`Failed to reach qBittorrent (${detail})`, 502);
   }
-
-  const text = (await res.text()).trim();
-  const cookie = extractSidCookie(res);
-  const bodyOk = text === "Ok." || text === "Ok";
-  const loginOk = res.ok && (bodyOk || res.status === 204 || Boolean(cookie));
-
-  if (!loginOk) {
-    const snippet = text ? `: ${text.slice(0, 80)}` : "";
-    throw new QBitError(
-      `Failed to login to qBittorrent (${res.status})${snippet}`,
-      502
-    );
-  }
-
-  return {
-    cookie,
-    basicAuth,
-    expiresAt: Date.now() + SESSION_TTL_MS,
-  };
-}
-
-async function ensureSession(force = false): Promise<Session> {
-  if (force) cachedSession = null;
-  if (!force && cachedSession && cachedSession.expiresAt > Date.now()) {
-    return cachedSession;
-  }
-  if (loginInflight) return loginInflight;
-
-  loginInflight = login()
-    .then((session) => {
-      cachedSession = session;
-      return session;
-    })
-    .catch((err) => {
-      cachedSession = null;
-      throw err;
-    })
-    .finally(() => {
-      loginInflight = null;
-    });
-
-  return loginInflight;
-}
-
-async function qbFetch(
-  path: string,
-  init: RequestInit = {},
-  retried = false
-): Promise<Response> {
-  const { baseUrl } = getConfig();
-  const session = await ensureSession(false);
-  const headers = qbHeaders(baseUrl, session, init.headers);
-  // Let the runtime set multipart boundary for FormData bodies.
-  if (init.body instanceof FormData) {
-    headers.delete("Content-Type");
-  }
-
-  const res = await fetch(`${baseUrl}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store",
-  });
-
-  if ((res.status === 401 || res.status === 403) && !retried) {
-    await ensureSession(true);
-    return qbFetch(path, init, true);
-  }
-
-  return res;
 }
 
 async function postForm(

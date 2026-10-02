@@ -2,7 +2,16 @@
 
 `lib/api/client.ts` → `app/api/qb/*` → `lib/qb/qbittorrent.ts` → qBittorrent。
 
-所有 `/api/qb/*` 由既有反向代理保護；route 透過 `withApi` 統一處理錯誤。
+`/api/qb/*` 由 `withApi` 檢查 OIDC session，未登入回 401。
+
+## 登入
+
+| 用途 | HTTP |
+|------|------|
+| 開始 Pocket ID 登入 | `GET /api/auth/login` |
+| OIDC callback | `GET /api/auth/callback` |
+| 目前 session | `GET /api/auth/session` |
+| 登出 | `POST /api/auth/logout` |
 
 ## 下載
 

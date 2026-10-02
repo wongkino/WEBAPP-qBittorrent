@@ -35,7 +35,7 @@
 **必讀**：`docs/guides/deployment.md`、`deploy/Dockerfile`、`deploy/compose.yaml`
 
 - Secrets 不提交 repo
-- 容器 port 僅綁定 localhost，登入由外部反向代理負責
+- 容器 port 僅綁定 localhost；瀏覽器登入是 OIDC，反向代理負責 HTTPS
 
 ---
 
@@ -53,7 +53,7 @@
 | 現象 | 查 |
 |------|-----|
 | qB 502 | `QBITTORRENT_URL`、CSRF Origin/Referer、帳密 |
-| 代理拒絕請求 | 代理登入規則是否同時涵蓋 `/api/qb/*` |
+| 主頁停在登入／401 | `OIDC_*`、`AUTH_SECRET`、Pocket ID callback 與 PKCE |
 | lint 失敗 | `npm run lint`；避免 effect 內同步 setState |
 
 ---

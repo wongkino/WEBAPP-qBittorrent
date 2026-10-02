@@ -4,7 +4,7 @@
 
 ## 專案
 
-個人 **qBittorrent Web App**（PWA），以 Docker 執行並代理 qBittorrent；外部反向代理負責登入。
+個人 **qBittorrent Web App**（PWA），以 Docker 執行並代理 qBittorrent。瀏覽器用 Pocket ID（OIDC）登入；伺服器用 `QBITTORRENT_USERNAME`／`QBITTORRENT_PASSWORD` 連線。反向代理負責 HTTPS。
 
 - 部署：Docker Compose；Web App 僅綁定宿主機 localhost
 - 語系：四語，`localStorage`（`lib/ui/i18n.ts`）
@@ -33,7 +33,7 @@ src/components/* → src/lib/api/client.ts → src/app/api/qb/* → src/lib/qb/q
 
 ## 硬規則
 
-- `/api/qb/*` 由既有反向代理保護；不可直接公開容器 port 3000
+- `/api/qb/*` 需要 OIDC session；不可直接公開容器 port 3000
 - qB CSRF：`Origin`/`Referer` 正確；pause 先 `stop` 再 `pause`
 - 不提交 `.env*`、`deploy/.env`
 - 回覆使用者用**繁體中文**

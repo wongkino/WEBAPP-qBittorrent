@@ -145,6 +145,15 @@ const zhHant = {
   "rss.noArticles": "尚無文章（可按重新整理）",
   "rss.pickFeed": "選擇左側訂閱",
   "rss.join": "加入",
+
+  "auth.loginHint": "使用 Pocket ID 登入後才能管理下載。",
+  "auth.loginAction": "使用 Pocket ID 登入",
+  "auth.logout": "登出",
+  "auth.setupHint": "請在環境變數設定 Pocket ID（OIDC）與 qBittorrent 帳號密碼。",
+  "auth.errorDenied": "已取消登入",
+  "auth.errorFailed": "登入失敗，請再試一次",
+  "auth.errorForbidden": "這個帳號沒有使用權限",
+  "auth.errorUnconfigured": "登入尚未設定完成",
 } as const;
 
 const zhHans: Record<MessageKey, string> = {
@@ -290,6 +299,15 @@ const zhHans: Record<MessageKey, string> = {
   "rss.noArticles": "尚无文章（可按刷新）",
   "rss.pickFeed": "选择左侧订阅",
   "rss.join": "加入",
+
+  "auth.loginHint": "使用 Pocket ID 登录后才能管理下载。",
+  "auth.loginAction": "使用 Pocket ID 登录",
+  "auth.logout": "退出",
+  "auth.setupHint": "请在环境变量中设置 Pocket ID（OIDC）和 qBittorrent 账号密码。",
+  "auth.errorDenied": "已取消登录",
+  "auth.errorFailed": "登录失败，请再试一次",
+  "auth.errorForbidden": "这个账号没有使用权限",
+  "auth.errorUnconfigured": "登录尚未设置完成",
 };
 
 const en: Record<MessageKey, string> = {
@@ -439,6 +457,15 @@ const en: Record<MessageKey, string> = {
   "rss.noArticles": "No articles yet (try Refresh)",
   "rss.pickFeed": "Select a feed",
   "rss.join": "Add",
+
+  "auth.loginHint": "Sign in with Pocket ID to manage downloads.",
+  "auth.loginAction": "Sign in with Pocket ID",
+  "auth.logout": "Sign out",
+  "auth.setupHint": "Set Pocket ID (OIDC) and the qBittorrent username and password in the environment.",
+  "auth.errorDenied": "Sign-in was cancelled",
+  "auth.errorFailed": "Sign-in failed. Try again.",
+  "auth.errorForbidden": "This account is not allowed",
+  "auth.errorUnconfigured": "Sign-in is not configured yet",
 };
 
 const ja: Record<MessageKey, string> = {
@@ -588,6 +615,15 @@ const ja: Record<MessageKey, string> = {
   "rss.noArticles": "記事がありません（更新を試してください）",
   "rss.pickFeed": "左側の購読を選択",
   "rss.join": "追加",
+
+  "auth.loginHint": "Pocket ID でログインするとダウンロードを管理できます。",
+  "auth.loginAction": "Pocket ID でログイン",
+  "auth.logout": "ログアウト",
+  "auth.setupHint": "環境変数に Pocket ID（OIDC）と qBittorrent のユーザー名とパスワードを設定してください。",
+  "auth.errorDenied": "ログインをキャンセルしました",
+  "auth.errorFailed": "ログインに失敗しました。もう一度お試しください",
+  "auth.errorForbidden": "このアカウントには権限がありません",
+  "auth.errorUnconfigured": "ログインがまだ設定されていません",
 };
 
 export const messages: Record<Locale, Record<MessageKey, string>> = {

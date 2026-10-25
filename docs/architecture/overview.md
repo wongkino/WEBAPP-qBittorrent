@@ -30,7 +30,7 @@
 Deploy：Docker Compose → Next.js standalone container
 ```
 
-**技術棧**：Next.js 16 App Router、React 19、TypeScript、Docker Compose。
+**技術棧**：Next.js 16 App Router、React 19、TypeScript、Node.js 24（Active LTS）、Docker Compose。
 
 ---
 

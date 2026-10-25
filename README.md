@@ -21,6 +21,8 @@
 
 ## 本機開發
 
+需要 Node.js 24（Active LTS，目前 24.22.1；見 `.nvmrc`）。
+
 ```bash
 cp dev/.env.example .env.development.local
 # 編輯 .env.development.local

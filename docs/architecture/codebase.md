@@ -18,7 +18,7 @@ qbittorrent-web-app/
 ├── config/                     # 工具設定（eslint）
 ├── docs/                       # 說明文件
 ├── .github/workflows/          # CI/CD
-└── 根目錄設定檔                 # package.json、next.config.ts、tsconfig.json
+└── 根目錄設定檔                 # package.json、.nvmrc、.node-version、next.config.ts、tsconfig.json
 ```
 
 > 根目錄設定檔為 npm / Next.js / TypeScript 硬性要求，不可移入子目錄。  

@@ -5,7 +5,7 @@
 ## 前置
 
 - Docker Engine 與 Docker Compose plugin
-- 映像基底為 Node.js 24（Active LTS，`node:24-alpine`）
+- 映像基底為 Node.js 26（Active LTS，`node:26-alpine`）
 - 可從 Docker 宿主機連線的 qBittorrent Web UI
 - 終止 HTTPS 的反向代理
 - Pocket ID 上的 OIDC 用戶端（不要勾 Public Client，要勾 PKCE）

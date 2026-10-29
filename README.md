@@ -21,7 +21,7 @@
 
 ## 本機開發
 
-需要 Node.js 24（Active LTS；見 `.nvmrc`）。
+需要 Node.js 26（Active LTS；見 `.nvmrc`）。`engines.node` 為 `>=24 <27`。
 
 ```bash
 cp dev/.env.example .env.development.local

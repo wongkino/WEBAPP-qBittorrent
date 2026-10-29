@@ -3,7 +3,7 @@
 | 檔案 | 說明 |
 |------|------|
 | `.env.example` | 複製為 `deploy/.env` |
-| `Dockerfile` | standalone 映像（`node:24-alpine`） |
+| `Dockerfile` | standalone 映像（`node:26-alpine`） |
 | `compose.yaml` | Docker Compose |
 
 ```bash

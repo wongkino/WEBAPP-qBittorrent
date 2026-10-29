@@ -1,6 +1,6 @@
 # 開發指南
 
-本機 Node.js 使用 Active LTS **24**（`.nvmrc`、`.node-version`；`package.json` 的 `engines.node` 為 `>=24 <25`）。
+本機 Node.js 使用 Active LTS **26**（`.nvmrc`、`.node-version`；`package.json` 的 `engines.node` 為 `>=24 <27`）。
 
 ```bash
 cp dev/.env.example .env.development.local

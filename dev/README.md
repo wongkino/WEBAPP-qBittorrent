@@ -3,7 +3,7 @@
 | 檔案 | 說明 |
 |------|------|
 | `.env.example` | 複製為根目錄 `.env.development.local` |
-| `docker/` | Docker 熱更新（`node:24-alpine`，`npm run dev:docker`） |
+| `docker/` | Docker 熱更新（`node:26-alpine`，`npm run dev:docker`） |
 
 ```bash
 cp dev/.env.example .env.development.local
